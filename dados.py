@@ -2,10 +2,11 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
-from scipy import linalg
+from scipy import linalg, sparse
 
 aulas_por_dia = 4
 dias_por_semana = 5
+qtd_disciplinas = 44
 
 # Matriz de dependências (MD), incluindo a disciplina nula (se o elemento a_ij == 1,
 # então a disciplina i depende da disciplina j,
@@ -63,8 +64,181 @@ G = np.zeros((aulas_por_dia, dias_por_semana), dtype="int")
 
 # Matriz de aprovação (MA): lista de disciplinas em que o aluno foi aprovado
 MA = np.array(map(int, "111111111111111111011111110110000001000000011"))
-# MA = np.array(map(int, "101000000010000000000000000000000000000000000")) #teste
 
-# disciplinas = []
-# disciplinas.add(np.array([
-# ]))
+# Para melhor legibilidade
+seg, ter, qua, qui, sex = range(dias_por_semana)
+aula1, aula2, aula3, aula4 = range(aulas_por_dia)
+
+
+# Lista de disciplinas + 1 disciplina nula
+disciplinas = [
+	np.array([	#NULA
+		map(int, "00000"),
+		map(int, "00000"),
+		map(int, "00000"),
+		map(int, "00000")
+	]),
+	np.array([	#ORGE
+		map(int, "00000"),
+		map(int, "00000"),
+		map(int, "11000"),
+		map(int, "11000")
+	]),
+	np.array([	#ALGO
+		map(int, "01010"),
+		map(int, "01010"),
+		map(int, "00000"),
+		map(int, "00000")
+	]),
+	np.array([	#INGL
+		map(int, "00100"),
+		map(int, "00100"),
+		map(int, "00001"),
+		map(int, "00001")
+	]),
+	np.array([	#CALC
+		map(int, "00000"),
+		map(int, "00000"),
+		map(int, "00000"),
+		map(int, "00000")
+	]),
+	np.array([	#NULA
+		map(int, "00000"),
+		map(int, "00000"),
+		map(int, "00000"),
+		map(int, "00000")
+	]),
+	np.array([	#NULA
+		map(int, "00000"),
+		map(int, "00000"),
+		map(int, "00000"),
+		map(int, "00000")
+	]),
+	np.array([	#NULA
+		map(int, "00000"),
+		map(int, "00000"),
+		map(int, "00000"),
+		map(int, "00000")
+	]),
+	np.array([	#NULA
+		map(int, "00000"),
+		map(int, "00000"),
+		map(int, "00000"),
+		map(int, "00000")
+	]),
+	np.array([	#NULA
+		map(int, "00000"),
+		map(int, "00000"),
+		map(int, "00000"),
+		map(int, "00000")
+	]),
+	np.array([	#NULA
+		map(int, "00000"),
+		map(int, "00000"),
+		map(int, "00000"),
+		map(int, "00000")
+	]),
+	np.array([	#NULA
+		map(int, "00000"),
+		map(int, "00000"),
+		map(int, "00000"),
+		map(int, "00000")
+	]),
+	np.array([	#NULA
+		map(int, "00000"),
+		map(int, "00000"),
+		map(int, "00000"),
+		map(int, "00000")
+	]),
+	np.array([	#NULA
+		map(int, "00000"),
+		map(int, "00000"),
+		map(int, "00000"),
+		map(int, "00000")
+	]),
+	np.array([	#NULA
+		map(int, "00000"),
+		map(int, "00000"),
+		map(int, "00000"),
+		map(int, "00000")
+	]),
+	np.array([	#NULA
+		map(int, "00000"),
+		map(int, "00000"),
+		map(int, "00000"),
+		map(int, "00000")
+	]),
+	np.array([	#NULA
+		map(int, "00000"),
+		map(int, "00000"),
+		map(int, "00000"),
+		map(int, "00000")
+	]),
+	np.array([	#NULA
+		map(int, "00000"),
+		map(int, "00000"),
+		map(int, "00000"),
+		map(int, "00000")
+	]),
+	np.array([	#NULA
+		map(int, "00000"),
+		map(int, "00000"),
+		map(int, "00000"),
+		map(int, "00000")
+	]),
+	np.array([	#NULA
+		map(int, "00000"),
+		map(int, "00000"),
+		map(int, "00000"),
+		map(int, "00000")
+	]),
+	np.array([	#NULA
+		map(int, "00000"),
+		map(int, "00000"),
+		map(int, "00000"),
+		map(int, "00000")
+	]),
+	np.array([	#NULA
+		map(int, "00000"),
+		map(int, "00000"),
+		map(int, "00000"),
+		map(int, "00000")
+	]),
+	np.array([	#NULA
+		map(int, "00000"),
+		map(int, "00000"),
+		map(int, "00000"),
+		map(int, "00000")
+	]),
+	np.array([	#NULA
+		map(int, "00000"),
+		map(int, "00000"),
+		map(int, "00000"),
+		map(int, "00000")
+	]),
+	np.array([	#NULA
+		map(int, "00000"),
+		map(int, "00000"),
+		map(int, "00000"),
+		map(int, "00000")
+	]),
+	np.array([	#NULA
+		map(int, "00000"),
+		map(int, "00000"),
+		map(int, "00000"),
+		map(int, "00000")
+	]),
+	np.array([	#NULA
+		map(int, "00000"),
+		map(int, "00000"),
+		map(int, "00000"),
+		map(int, "00000")
+	]),
+	np.array([	#NULA
+		map(int, "00000"),
+		map(int, "00000"),
+		map(int, "00000"),
+		map(int, "00000")
+	]),
+	
+]
