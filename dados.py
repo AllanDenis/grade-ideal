@@ -4,12 +4,12 @@
 import numpy as np
 from scipy.sparse import *
 from scipy import linalg
+import disciplina
 
+# Para melhor legibilidade
 aulas_por_dia = 4
 dias_por_semana = 5
 qtd_disciplinas = 44
-
-# Para melhor legibilidade
 seg, ter, qua, qui, sex = range(dias_por_semana)
 aula1, aula2, aula3, aula4 = range(aulas_por_dia)
 
@@ -73,13 +73,14 @@ G = np.zeros((aulas_por_dia, dias_por_semana), dtype="int")
 
 # Matriz de aprovação (MA): lista de disciplinas em que o aluno foi aprovado
 MA = csr_matrix(np.array(map(int, "111111111111111111011111110110000001000000011")))
-# MA = csr_matrix(np.array(map(int, "101101011110110001001000000000000000000000010")))
+# MA = csr_matrix(np.array(map(int, "100000000000000000000000000000000000000000000")))
+MA = csr_matrix(np.array(map(int, "101101011110110001001000000000000000000000011")))
 
 disciplinas = []
 disc_inativas = set([0, 36, 41, 42])
  
 # Lista de disciplinas + 1 disciplina nula
-for i in range(qtd_disciplinas + 1): disciplinas.append(csr_matrix(G.copy()))
+for i in range(qtd_disciplinas + 1): disciplinas.append(disciplina.Disciplina())
 
 disciplinas[1] = csr_matrix(((1,1,1,1), ((aula3,aula4,aula3,aula4), (seg,seg,ter,ter))), shape=(aulas_por_dia, dias_por_semana))	#ORGE
 disciplinas[2] = csr_matrix(((1,1,1,1), ((aula1,aula2,aula1,aula2), (ter,ter,qui,qui))), shape=(aulas_por_dia, dias_por_semana))	#ALGO

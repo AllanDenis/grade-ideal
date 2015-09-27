@@ -4,10 +4,16 @@
 # Otimização de grade de disciplinas, visando maximizar o número de aulas por semana
 # ou juntar as folgas no mesmo dia
 
+import time
+agora = time.time
+inicio = agora()
+
 from scipy import linalg, sparse
 from itertools import combinations
 import numpy as np
-import dados
+import matplotlib.pyplot as plt  
+import pandas as pd  
+import dados, disciplina
 
 deps = dados.MD
 aprovadas = dados.MA
@@ -36,7 +42,7 @@ for i in cursaveis:
 print "Vetor de requisitos (SC):\t", "".join(map(str, somaReq))
 print "Vetor de aprovação (AP):\t", "".join(map(str, aprovadas.toarray()[0]))
 print "Vetor de cursáveis (DC):\t",		"".join(map(str, cursaveis))
-print "Número de grades possíveis:\t",	2 ** cursaveis.count(1) - 1
+print "Calculando as melhores grades para você. Aguarde..."
 
 # Obtém os IDs das disciplinas cursáveis
 cursaveis = set([x for x in xrange(len(cursaveis)) if cursaveis[x] == 1])
@@ -44,29 +50,59 @@ cursaveis -= dados.disc_inativas
 
 # Retorna True se a grade não possuir conflitos
 def grade_valida(g):
-	if len(g.data) > 0:
-		return g.data.max() <= 1 # no máximo uma disciplina por aula
+	return g.data.max() <= 1 # no máximo uma disciplina por aula
 
-# 0		= grade vazia
-# 100	= grade perfeita
 def grade_pontuacao(g):
-	pontos = 100 * (float(g.nnz) / (g.shape[0] * g.shape[1]))
-	dias_vazios = list(g.sum(axis=0).getA()[0])
-	# help(dias_vazios)
-	pontos *= 1 + (.05 * dias_vazios.count(0))
+	periodo_max = 8
+	aulas = aulas_da_grade(g)
+	pontos = aulas.nnz # número de aulas
+	bonus = 0 # % sobre os pontos
+	dias_vazios = aulas.sum(axis=0).getA()[0] # Aulas por dia
+	dias_vazios = list(dias_vazios).count(0)	# Dias sem aula
+	bonus += 10e-2 * dias_vazios	# Privilegia dias de folga
+	bonus += 2e-2 * (periodo_max - (np.mean(g)) / 5) # Privilegia as primeiras disciplinas
+	bonus -= 1e-2 * (np.std(g)/np.mean(g)) # Penaliza o espalhamento de disciplinas
+	pontos *= 1 + bonus
 	return pontos
 
+# Retorna uma matriz contendo o horário semanal das disciplinas da grade g
+def aulas_da_grade(g):
+	une_disciplinas = lambda a, b: a + b
+	horario_disciplinas = map(lambda d: dados.disciplinas[d], g)
+	return reduce(une_disciplinas,	horario_disciplinas)
+	
 grades = []
+# Busca exaustiva (todas as combinações possíveis)
 
-print cursaveis
-
-for i in range(7)[::-1]:
+for i in xrange(1, len(cursaveis) + 1):
+	print "Buscando grades com %d disciplina%s..." % (i, ("s" if i > 1 else ""))
+	discs_tmp = []	# Lista de disciplinas para cada tamanho de grade
+	inicio_tmp = agora()
 	for grade in combinations(cursaveis, i):
-		tmp = dados.disciplinas[0].copy()
-		for disc in grade:
-			tmp = tmp + dados.disciplinas[disc]
-		if grade_valida(tmp):
-			horario = tmp.copy()
-			grades.append((tmp.copy(), sorted(grade), grade_pontuacao(tmp)))
-			# if tmp.nnz == 20: print tmp.todense(), sorted(grade), "[PERFEITA]\n"
-for i in grades: print i[0].todense(), i[1], i[2], "\n"
+		horario = dados.disciplinas[0].horario.copy()
+		horario = reduce(lambda a, b: a + b, map(lambda d: dados.disciplinas[d], grade))
+		# for disc in grade:
+			# horario = horario + dados.disciplinas[disc]
+		if grade_valida(horario):
+			# discs_tmp.append((horario, sorted(grade), grade_pontuacao(horario)))
+			discs_tmp.append(sorted(grade))
+	if len(discs_tmp) > 0:
+		print "%d encontradas em %.3f segundos." % (len(discs_tmp), (agora() - inicio_tmp))
+		grades.extend(discs_tmp)
+	else:
+		print "Nenhuma encontrada em %.3f segundos." % (agora() - inicio_tmp)
+		break
+
+print "Total de grades:\t%d" % len(grades)
+
+print "Ordenando as grades..."
+inicio_tmp = agora()
+# Ordena as grades por quantidade de disciplinas e seus períodos
+grades.sort(key=grade_pontuacao, reverse=True)
+print "Ordenação feita em %.3f segundos." % (agora() - inicio_tmp)
+		
+for i in enumerate(grades):#[:(5 if len(grades) > 5 else -1)]:
+	print "\n(%d)\t%.2fpts\t" % (i[0] + 1, grade_pontuacao(i[1])), i[1]
+	print aulas_da_grade(i[1]).todense()
+
+print "\vTudo feito em %-.3fs." % (agora() - inicio)
