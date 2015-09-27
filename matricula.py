@@ -11,8 +11,6 @@ inicio = agora()
 from scipy import linalg, sparse
 from itertools import combinations
 import numpy as np
-import matplotlib.pyplot as plt  
-import pandas as pd  
 import dados, disciplina
 
 deps = dados.MD
@@ -106,3 +104,5 @@ for i in enumerate(grades):#[:(5 if len(grades) > 5 else -1)]:
 	print aulas_da_grade(i[1]).todense()
 
 print "\vTudo feito em %-.3fs." % (agora() - inicio)
+
+
