@@ -11,7 +11,7 @@ inicio = agora()
 from scipy import linalg, sparse
 from itertools import combinations
 import numpy as np
-import dados, disciplina
+import dados, disciplina, view
 
 deps = dados.MD
 aprovadas = dados.MA
@@ -44,7 +44,7 @@ print "Calculando as melhores grades para você. Aguarde..."
 
 # Obtém os IDs das disciplinas cursáveis
 cursaveis = set([x for x in xrange(len(cursaveis)) if cursaveis[x] == 1])
-cursaveis -= dados.disc_inativas
+cursaveis = list(cursaveis - dados.disc_inativas)
 
 # Retorna True se a grade não possuir conflitos
 def grade_valida(g):
@@ -71,8 +71,7 @@ def aulas_da_grade(g):
 	
 grades = []
 # Busca exaustiva (todas as combinações possíveis)
-
-for i in xrange(1, len(cursaveis) + 1):
+for i in xrange(1, 7):#len(cursaveis) + 1):
 	print "Buscando grades com %d disciplina%s..." % (i, ("s" if i > 1 else ""))
 	discs_tmp = []	# Lista de disciplinas para cada tamanho de grade
 	inicio_tmp = agora()
@@ -92,17 +91,28 @@ for i in xrange(1, len(cursaveis) + 1):
 		break
 
 print "Total de grades:\t%d" % len(grades)
-
 print "Ordenando as grades..."
 inicio_tmp = agora()
 # Ordena as grades por quantidade de disciplinas e seus períodos
 grades.sort(key=grade_pontuacao, reverse=True)
 print "Ordenação feita em %.3f segundos." % (agora() - inicio_tmp)
-		
-for i in enumerate(grades):#[:(5 if len(grades) > 5 else -1)]:
+
+# '''		
+for i in enumerate(grades[:3]):#[:(5 if len(grades) > 5 else -1)]:
 	print "\n(%d)\t%.2fpts\t" % (i[0] + 1, grade_pontuacao(i[1])), i[1]
 	print aulas_da_grade(i[1]).todense()
 
+# '''
 print "\vTudo feito em %-.3fs." % (agora() - inicio)
 
+v = view.View()
+v.dados = {}
+v.dados["tamanhos"] = map(lambda g: len(g), grades)
+v.dados["pontos"] = map(lambda g: grade_pontuacao(g), grades)
+v.dados["popularidade"] = []
 
+for g in grades:
+	for i in g:
+		v.dados["popularidade"].append(i)
+
+v.exibir()

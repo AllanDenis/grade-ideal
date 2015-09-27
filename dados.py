@@ -72,8 +72,8 @@ MD = np.array([
 G = np.zeros((aulas_por_dia, dias_por_semana), dtype="int")
 
 # Matriz de aprovação (MA): lista de disciplinas em que o aluno foi aprovado
-MA = csr_matrix(np.array(map(int, "111111111111111111011111110110000001000000011")))
-# MA = csr_matrix(np.array(map(int, "100000000000000000000000000000000000000000000")))
+# MA = csr_matrix(np.array(map(int,	"100000000000000000000000000000000000000000000")))
+# MA = csr_matrix(np.array(map(int, "111111111111111111011111110110000001000000011")))
 MA = csr_matrix(np.array(map(int, "101101011110110001001000000000000000000000011")))
 
 disciplinas = []
