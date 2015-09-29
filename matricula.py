@@ -8,10 +8,11 @@ import time
 agora = time.time
 inicio = agora()
 
-from scipy import linalg, sparse
 from itertools import combinations
 import numpy as np
-import dados, disciplina, view
+from scipy import linalg, sparse
+from bintrees import BinaryTree as bt
+import arvore, dados, disciplina, view
 
 deps = dados.MD
 aprovadas = dados.MA
@@ -68,27 +69,44 @@ def aulas_da_grade(g):
 	une_disciplinas = lambda a, b: a + b
 	horario_disciplinas = map(lambda d: dados.disciplinas[d], g)
 	return reduce(une_disciplinas,	horario_disciplinas)
-	
-grades = []
+
+
 # Busca exaustiva (todas as combinações possíveis)
-for i in xrange(1, 7):#len(cursaveis) + 1):
-	print "Buscando grades com %d disciplina%s..." % (i, ("s" if i > 1 else ""))
-	discs_tmp = []	# Lista de disciplinas para cada tamanho de grade
-	inicio_tmp = agora()
-	for grade in combinations(cursaveis, i):
-		horario = dados.disciplinas[0].horario.copy()
-		horario = reduce(lambda a, b: a + b, map(lambda d: dados.disciplinas[d], grade))
-		# for disc in grade:
-			# horario = horario + dados.disciplinas[disc]
-		if grade_valida(horario):
-			# discs_tmp.append((horario, sorted(grade), grade_pontuacao(horario)))
-			discs_tmp.append(sorted(grade))
-	if len(discs_tmp) > 0:
-		print "%d encontradas em %.3f segundos." % (len(discs_tmp), (agora() - inicio_tmp))
-		grades.extend(discs_tmp)
-	else:
-		print "Nenhuma encontrada em %.3f segundos." % (agora() - inicio_tmp)
-		break
+def busca_exaustiva(cursaveis):
+	grades = []
+	for i in xrange(1, 7):#len(cursaveis) + 1):
+		print "Buscando grades com %d disciplina%s..." % (i, ("s" if i > 1 else ""))
+		discs_tmp = []	# Lista de disciplinas para cada tamanho de grade
+		inicio_tmp = agora()
+		for grade in combinations(cursaveis, i):
+			horario = dados.disciplinas[0].horario.copy()
+			horario = reduce(lambda a, b: a + b, map(lambda d: dados.disciplinas[d], grade))
+			# for disc in grade:
+				# horario = horario + dados.disciplinas[disc]
+			if grade_valida(horario):
+				# discs_tmp.append((horario, sorted(grade), grade_pontuacao(horario)))
+				discs_tmp.append(sorted(grade))
+		if len(discs_tmp) > 0:
+			print "%d encontradas em %.3f segundos." % (len(discs_tmp), (agora() - inicio_tmp))
+			grades.extend(discs_tmp)
+		else:
+			print "Nenhuma encontrada em %.3f segundos." % (agora() - inicio_tmp)
+			break
+	return grades
+
+def busca_linear(cursaveis):
+	grades = []
+	for i in range(len(cursaveis)):
+		g = []
+		for d in cursaveis[i:]:
+			if grade_valida(aulas_da_grade(g + [d])):
+				g.append(d)
+		grades.append(g)
+	return grades
+
+		
+# grades = busca_linear(cursaveis)
+grades = busca_exaustiva(cursaveis)
 
 print "Total de grades:\t%d" % len(grades)
 print "Ordenando as grades..."
@@ -98,7 +116,7 @@ grades.sort(key=grade_pontuacao, reverse=True)
 print "Ordenação feita em %.3f segundos." % (agora() - inicio_tmp)
 
 # '''		
-for i in enumerate(grades[:3]):#[:(5 if len(grades) > 5 else -1)]:
+for i in enumerate(grades[:5]):#[:(5 if len(grades) > 5 else -1)]:
 	print "\n(%d)\t%.2fpts\t" % (i[0] + 1, grade_pontuacao(i[1])), i[1]
 	print aulas_da_grade(i[1]).todense()
 
