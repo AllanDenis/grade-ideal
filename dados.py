@@ -119,5 +119,3 @@ disc_inativas = set([0, 36, 41, 42])
 # disciplinas = []
 # for h in range(len(horario)):
 	# disciplinas.append(disciplina.Disciplina(h, "NOME", "ABCD", 1))
-
-
