@@ -33,11 +33,6 @@ cursaveis = list(cursaveis.getA()[0])
 
 # Se o vetor de aprovação for inconsistente (disciplinas cumpridas sem todos os requisitos),
 # o vetor de cursáveis terá valores negativos.
-'''
-for i in cursaveis:
-	if i < 0: 
-		exit("Vetor de aprovação inválido. Verifique as dependências.")
-'''
 cursaveis = map(lambda x: 0 if x < 0 else x, cursaveis)
 	
 print "Vetor de requisitos (SC):\t", "".join(map(str, somaReq))
@@ -64,7 +59,6 @@ def grade_pontuacao(g):
 	dias_vazios = formata_horario(aulas)
 	dias_vazios = dias_vazios.sum(axis=0)
 	dias_vazios = list(dias_vazios).count(0)
-	# print dias_vazios ; exit(dias_vazios)
 	pontos = list(aulas).count(1) # número de aulas
 	bonus = 0 # % sobre os pontos
 	bonus += 10e-2 * dias_vazios	# Privilegia dias de folga
@@ -76,7 +70,6 @@ def grade_pontuacao(g):
 # Retorna uma matriz contendo o horário semanal das disciplinas da grade g
 def aulas_da_grade(g, horario):
 	une_disciplinas = lambda a, b: a + b
-	# horario_disciplinas = map(lambda d: dados.disciplinas[d], g)
 	horario_disciplinas = map(lambda d: dados.horario[d], g)
 	return reduce(une_disciplinas, horario_disciplinas)
 
@@ -113,7 +106,7 @@ def busca_gulosa(cursaveis):
 			if grade_valida(aulas_da_grade(g + [d], dados.horario)):
 				g.append(d)
 		grades.append(g)
-		cursaveis = cursaveis[1:] + cursaveis[0:0]
+		cursaveis = cursaveis[1:] + cursaveis[0:1]
 	return grades
 
 inicio = agora()
@@ -128,21 +121,21 @@ inicio = agora()
 grades.sort(key=grade_pontuacao, reverse=True)
 print "Ordenação feita em %.3f segundos." % (agora() - inicio)
 
-# '''		
+'''		
 for i in enumerate(grades[:]):#[:(5 if len(grades) > 5 else -1)]:
 	print "\n(%d)\t%.2fpts\t" % (i[0] + 1, grade_pontuacao(i[1])), i[1]
 	print formata_horario(aulas_da_grade(i[1], dados.horario))
 
-# '''
+'''
 
-# v = view.View()
-# v.dados = {}
-# v.dados["tamanhos"] = map(lambda g: len(g), grades)
-# v.dados["pontos"] = map(lambda g: grade_pontuacao(g), grades)
-# v.dados["popularidade"] = []
+v = view.View()
+v.dados = {}
+v.dados["tamanhos"] = map(lambda g: len(g), grades)
+v.dados["pontos"] = map(lambda g: grade_pontuacao(g), grades)
+v.dados["popularidade"] = []
 
-# for g in grades:
-	# for i in g:
-		# v.dados["popularidade"].append(i)
+for g in grades:
+	for i in g:
+		v.dados["popularidade"].append(i)
 
 # v.exibir()
