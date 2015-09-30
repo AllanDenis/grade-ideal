@@ -4,24 +4,22 @@
 # Otimização de grade de disciplinas, visando maximizar o número de aulas por semana
 # ou juntar as folgas no mesmo dia
 
+import arvore, dados, disciplina, view
 import time
-agora = time.time
-inicio = agora()
-
 from itertools import combinations
 import numpy as np
 from scipy import linalg, sparse
 from bintrees import BinaryTree as bt
-import arvore, dados, disciplina, view
 
+agora = time.time
 deps = dados.MD
-aprovadas = dados.MA
+historico = dados.MA
 
 somaReq = deps.sum(axis=0)
 
 # Lista de disciplinas que o aluno pode cursar.
-cursaveis = aprovadas.dot(deps)
-cursaveis = cursaveis - aprovadas
+cursaveis = historico.dot(deps)
+cursaveis = cursaveis - historico
 
 # Para evitar erro de div. por zero na disciplina nula e não permitir como cursável após divisão inteira
 somaReq[0] = -2 # Qualquer valor < -1
@@ -34,26 +32,29 @@ cursaveis = list(cursaveis.getA()[0])
 
 # Se o vetor de aprovação for inconsistente (disciplinas cumpridas sem todos os requisitos),
 # o vetor de cursáveis terá valores negativos.
+'''
 for i in cursaveis:
 	if i < 0: 
 		exit("Vetor de aprovação inválido. Verifique as dependências.")
+'''
+cursaveis = map(lambda x: 0 if x < 0 else x, cursaveis)
 	
 print "Vetor de requisitos (SC):\t", "".join(map(str, somaReq))
-print "Vetor de aprovação (AP):\t", "".join(map(str, aprovadas.toarray()[0]))
+print "Vetor de aprovação (AP):\t", "".join(map(str, historico.toarray()[0]))
 print "Vetor de cursáveis (DC):\t",		"".join(map(str, cursaveis))
 print "Calculando as melhores grades para você. Aguarde..."
 
 # Obtém os IDs das disciplinas cursáveis
 cursaveis = set([x for x in xrange(len(cursaveis)) if cursaveis[x] == 1])
-cursaveis = list(cursaveis - dados.disc_inativas)
+cursaveis = sorted(list(cursaveis - dados.disc_inativas))
 
 # Retorna True se a grade não possuir conflitos
 def grade_valida(g):
 	return g.data.max() <= 1 # no máximo uma disciplina por aula
-
+	
 def grade_pontuacao(g):
 	periodo_max = 8
-	aulas = aulas_da_grade(g)
+	aulas = aulas_da_grade(g, dados.horario)
 	pontos = aulas.nnz # número de aulas
 	bonus = 0 # % sobre os pontos
 	dias_vazios = aulas.sum(axis=0).getA()[0] # Aulas por dia
@@ -65,10 +66,11 @@ def grade_pontuacao(g):
 	return pontos
 
 # Retorna uma matriz contendo o horário semanal das disciplinas da grade g
-def aulas_da_grade(g):
+def aulas_da_grade(g, horario):
 	une_disciplinas = lambda a, b: a + b
 	horario_disciplinas = map(lambda d: dados.disciplinas[d], g)
-	return reduce(une_disciplinas,	horario_disciplinas)
+	return reduce(une_disciplinas, horario_disciplinas)
+	
 
 
 # Busca exaustiva (todas as combinações possíveis)
@@ -94,34 +96,36 @@ def busca_exaustiva(cursaveis):
 			break
 	return grades
 
-def busca_linear(cursaveis):
+def busca_gulosa(cursaveis):
 	grades = []
+	cursaveis.sort()
 	for i in range(len(cursaveis)):
 		g = []
-		for d in cursaveis[i:]:
-			if grade_valida(aulas_da_grade(g + [d])):
+		for d in cursaveis:
+			if grade_valida(aulas_da_grade(g + [d], dados.horario)):
 				g.append(d)
 		grades.append(g)
+		cursaveis = cursaveis[1:] + cursaveis[0:0]
 	return grades
 
-		
-# grades = busca_linear(cursaveis)
-grades = busca_exaustiva(cursaveis)
+inicio = agora()
+grades = busca_gulosa(cursaveis)
+# grades = busca_exaustiva(cursaveis)
 
+print "\vBusca feita em %-.3fs." % (agora() - inicio)
 print "Total de grades:\t%d" % len(grades)
 print "Ordenando as grades..."
-inicio_tmp = agora()
+inicio = agora()
 # Ordena as grades por quantidade de disciplinas e seus períodos
 grades.sort(key=grade_pontuacao, reverse=True)
-print "Ordenação feita em %.3f segundos." % (agora() - inicio_tmp)
+print "Ordenação feita em %.3f segundos." % (agora() - inicio)
 
 # '''		
 for i in enumerate(grades[:5]):#[:(5 if len(grades) > 5 else -1)]:
 	print "\n(%d)\t%.2fpts\t" % (i[0] + 1, grade_pontuacao(i[1])), i[1]
-	print aulas_da_grade(i[1]).todense()
+	print aulas_da_grade(i[1], dados.horario).todense()
 
 # '''
-print "\vTudo feito em %-.3fs." % (agora() - inicio)
 
 v = view.View()
 v.dados = {}
@@ -133,4 +137,4 @@ for g in grades:
 	for i in g:
 		v.dados["popularidade"].append(i)
 
-v.exibir()
+# v.exibir()
