@@ -4,13 +4,12 @@
 # Otimização de grade de disciplinas, visando maximizar o número de aulas por semana
 # ou juntar as folgas no mesmo dia
 
-import arvore, dados, disciplina, view
+import dados, disciplina, view
 import time
 from itertools import combinations
 import numpy as np
 from scipy import linalg, sparse
 import algoritmo_genetico 
-
 
 agora = time.time
 deps = dados.dependencias
@@ -76,7 +75,7 @@ def aulas_da_grade(g, horario):
 # Busca exaustiva (todas as combinações possíveis)
 def busca_exaustiva(cursaveis):
 	grades = []
-	for i in xrange(1, 7):#len(cursaveis) + 1):
+	for i in xrange(1, len(cursaveis) + 1):
 		print "Buscando grades com %d disciplina%s..." % (i, ("s" if i > 1 else ""))
 		discs_tmp = []	# Lista de disciplinas para cada tamanho de grade
 		inicio_tmp = agora()
@@ -128,14 +127,14 @@ for i in enumerate(grades[:]):#[:(5 if len(grades) > 5 else -1)]:
 
 '''
 
-v = view.View()
-v.dados = {}
-v.dados["tamanhos"] = map(lambda g: len(g), grades)
-v.dados["pontos"] = map(lambda g: grade_pontuacao(g), grades)
-v.dados["popularidade"] = []
+# v = view.View()
+# v.dados = {}
+# v.dados["tamanhos"] = map(lambda g: len(g), grades)
+# v.dados["pontos"] = map(lambda g: grade_pontuacao(g), grades)
+# v.dados["popularidade"] = []
 
-for g in grades:
-	for i in g:
-		v.dados["popularidade"].append(i)
+# for g in grades:
+	# for i in g:
+		# v.dados["popularidade"].append(i)
 
 # v.exibir()
