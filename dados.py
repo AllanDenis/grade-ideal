@@ -10,6 +10,7 @@ import disciplina
 aulas_por_dia = 4
 dias_por_semana = 5
 qtd_disciplinas = 44
+disc_inativas = set([0, 36, 41, 42])
 
 '''
 Colunas: disciplinas
@@ -97,11 +98,6 @@ dependencias = np.array([
 	map(int, "000000000000000000000000000000000000000000000")
 ])
 
-# MD = csr_matrix(MD)
-
-# Grade semanal de aulas (4 aulas x 5 dias). 
-G = np.zeros((aulas_por_dia, dias_por_semana), dtype="int")
-
 # Matriz de aprovação (MA): lista de disciplinas em que o aluno foi aprovado
 # historico = csr_matrix(np.array(map(int, "100000000000000000000000000000000000000000000")))
 # historico = csr_matrix(np.array(map(int, "111111111111111111011111110110000001000000011")))	# Allan Denis
@@ -113,8 +109,6 @@ G = np.zeros((aulas_por_dia, dias_por_semana), dtype="int")
 # historico = csr_matrix(np.array(map(int, "111101111111111111111111100000100000000000011"))) # Denis Vieira
 historico = csr_matrix(np.array(map(int, "111101111111110110101011100000100000000000010"))) # Kyo
 # historico = csr_matrix(np.array(map(int, "111111101111111111111011100000000000000000000"))) # Nywton
-
-disc_inativas = set([0, 36, 41, 42])
 
 # disciplinas = []
 # for h in range(len(horario)):

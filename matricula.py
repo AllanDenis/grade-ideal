@@ -9,8 +9,8 @@ import time
 from itertools import combinations
 import numpy as np
 from scipy import linalg, sparse
+import algoritmo_genetico 
 
-from bintrees import BinaryTree as bt
 
 agora = time.time
 deps = dados.dependencias
