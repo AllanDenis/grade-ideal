@@ -104,8 +104,8 @@ assert dependencias.shape == (qtd_disciplinas + 1, qtd_disciplinas + 1), "A matr
 assert set(dependencias.flat) == set([0,1]), "A matriz de dependências contém valores inválidos."
 
 # Histórico: lista de disciplinas em que o aluno foi aprovado
-historico = csr_matrix(np.array(map(int, "100000000000000000000000000000000000000000000")))
-# historico = csr_matrix(np.array(map(int, "111111111111111111011111110110000001000000011")))	# Allan Denis
+# historico = csr_matrix(np.array(map(int, "100000000000000000000000000000000000000000000")))
+historico = csr_matrix(np.array(map(int, "111111111111111111011111110110000001000000011")))	# Allan Denis
 # historico = csr_matrix(np.array(map(int, "111111111111111111111000000000000000000000000"))) # Arthur Novaes, Leilton
 # historico = csr_matrix(np.array(map(int, "111111111111111111101111110000100000010000011"))) # Hercílio
 # historico = csr_matrix(np.array(map(int, "111111111101101111111011000000000010000000000"))) # Ernande

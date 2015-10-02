@@ -11,7 +11,8 @@ class Genetico():
 		'''Retorna uma populacao com genomas aleatórios.'''
 		assert num_individuos > 0, "O tamanho da população deve ser maior que zero."
 		assert tam_genoma > 0, "O tamanho do genoma deve ser maior que zero."
-		int_aleatorio = lambda x: 1 if randint(0, 5) == 0 else 0
+		# int_aleatorio = lambda x: 1 if randint(0, 5) == 0 else 0
+		int_aleatorio = lambda x: randint(0,1) 
 		populacao = []
 		for i in range(num_individuos):
 			populacao.append(map(int_aleatorio, range(tam_genoma)))
@@ -39,7 +40,7 @@ class Genetico():
 		'''Altera o genoma segundo a taxa de mutação informada'''
 		assert len(genoma) > 0, "O genoma não pode ser nulo."
 		assert taxa_mutacao >= 0, "A taxa de mutação não pode ser negativa."
-		altera_genes = lambda x: x if randint(0, 100) > taxa_mutacao else not x
+		altera_genes = lambda x: x if randint(0, 100) > taxa_mutacao else 1 - x
 		return map(altera_genes, genoma)
 	
 	def selecao(self, populacao, func_fitness, perc_corte):
