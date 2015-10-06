@@ -125,27 +125,26 @@ def busca_genetica(cursaveis):
 	'''Evolui para uma boa grade (possivelmente a melhor) usando algoritmo genético.'''
 	g = algoritmo_genetico.Genetico()
 	tam_genoma = len(cursaveis)
-	tam_populacao = 500
+	tam_populacao = 50
 	perc_corte = 80
-	mutacao = 30
+	mutacao = 20
 	geracoes = 500
 	populacao = g.populacao_inicial(tam_populacao, tam_genoma)
 	i, melhor, pior = 1, -1, 1
 	avalia_pontuacao = lambda x: grade_pontuacao(binario_para_indices(x, cursaveis))
 
-	while i < geracoes or melhor == 0:
+	while i < geracoes:
 		i += 1
 		# pior = avalia_pontuacao(populacao[-1])
-		# desvio = np.std(map(avalia_pontuacao, populacao))
-		media = np.mean(map(avalia_pontuacao, populacao))
+		desvio = np.std(map(avalia_pontuacao, populacao))
+		# media = np.mean(map(avalia_pontuacao, populacao))
 		melhor = avalia_pontuacao(populacao[0])
-		print "Geração %d:\tMédia:%.2f pts\t\tMelhor: %.2f pts\tDiscs.:\t" % (i, media, melhor), binario_para_indices(populacao[0], cursaveis)
+		print "Geração %d:\tDesvio:%.2f pts\t\tMelhor: %.2f pts\tDiscs.:\t" % (i, desvio, melhor), binario_para_indices(populacao[0], cursaveis)
 		populacao = g.selecao(populacao, avalia_pontuacao, perc_corte)
 		populacao = g.procriar(populacao, tam_populacao - len(populacao), mutacao)
 	return populacao[0]
 
 inicio = agora()
-'''
 #==========================================================
 grade = busca_genetica(cursaveis)
 grade = binario_para_indices(grade, cursaveis)
@@ -168,6 +167,7 @@ print "Ordenação feita em %.3f segundos." % (agora() - inicio)
 for i in enumerate(grades[:]):#[:(5 if len(grades) > 5 else -1)]:
 	print "\n(%d)\t%.2fpts\t" % (i[0] + 1, grade_pontuacao(i[1])), i[1]
 	print formata_horario(aulas_da_grade(i[1], dados.horario))
+'''
 
 
 # v = view.View()
