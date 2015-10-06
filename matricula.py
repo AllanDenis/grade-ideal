@@ -44,11 +44,10 @@ cursaveis = set([x for x in xrange(len(cursaveis)) if cursaveis[x] == 1])
 cursaveis = sorted(list(cursaveis - dados.disc_inativas))
 
 
-# Retorna True se a grade não possuir conflitos
 def grade_valida(g):
-	if len(g) > 0:
-		return max(g.flat) <= 1 # no máximo uma disciplina por aula
-	return False
+	'''Retorna True se a grade não possuir conflitos.'''
+	assert len(g.flat) > 0, "A grade deve ter ao menos uma disciplina."
+	return max(g.flat) == 1 # no máximo uma disciplina por aula
 
 # Transforma um horário linear em uma matriz semanal, para impressão amigável
 def formata_horario(h):
@@ -126,25 +125,27 @@ def busca_genetica(cursaveis):
 	'''Evolui para uma boa grade (possivelmente a melhor) usando algoritmo genético.'''
 	g = algoritmo_genetico.Genetico()
 	tam_genoma = len(cursaveis)
-	tam_populacao = 100
-	perc_corte = 50
-	mutacao = 5
-	geracoes = 100
+	tam_populacao = 500
+	perc_corte = 80
+	mutacao = 30
+	geracoes = 500
 	populacao = g.populacao_inicial(tam_populacao, tam_genoma)
-	i, melhor, pior = 0, -1, 1
+	i, melhor, pior = 1, -1, 1
 	avalia_pontuacao = lambda x: grade_pontuacao(binario_para_indices(x, cursaveis))
 
-	while melhor != pior or melhor == 0:
+	while i < geracoes or melhor == 0:
 		i += 1
 		# pior = avalia_pontuacao(populacao[-1])
-		pior = np.std(map(avalia_pontuacao, populacao))
+		# desvio = np.std(map(avalia_pontuacao, populacao))
+		media = np.mean(map(avalia_pontuacao, populacao))
 		melhor = avalia_pontuacao(populacao[0])
-		print "Geração %d:\t%.2f\t-\t%.2f pts" % (i, pior, melhor), binario_para_indices(populacao[0], cursaveis)
+		print "Geração %d:\tMédia:%.2f pts\t\tMelhor: %.2f pts\tDiscs.:\t" % (i, media, melhor), binario_para_indices(populacao[0], cursaveis)
 		populacao = g.selecao(populacao, avalia_pontuacao, perc_corte)
 		populacao = g.procriar(populacao, tam_populacao - len(populacao), mutacao)
 	return populacao[0]
 
 inicio = agora()
+'''
 #==========================================================
 grade = busca_genetica(cursaveis)
 grade = binario_para_indices(grade, cursaveis)
@@ -153,8 +154,8 @@ print "\n(%d)\t%.2fpts\t" % (1, grade_pontuacao(grade)), "%.2f" % grade_pontuaca
 print formata_horario(aulas_da_grade(grade, dados.horario))
 #==========================================================
 '''		
-grades = busca_gulosa(cursaveis)
-grades = busca_exaustiva(cursaveis)
+# grades = busca_gulosa(cursaveis)
+grades = busca_exaustiva(cursaveis, 5)
 
 print "\vBusca feita em %-.3fs." % (agora() - inicio)
 print "Total de grades:\t%d" % len(grades)
@@ -169,15 +170,14 @@ for i in enumerate(grades[:]):#[:(5 if len(grades) > 5 else -1)]:
 	print formata_horario(aulas_da_grade(i[1], dados.horario))
 
 
-v = view.View()
-v.dados = {}
-v.dados["tamanhos"] = map(lambda g: len(g), grades)
-v.dados["pontos"] = map(lambda g: grade_pontuacao(g), grades)
-v.dados["popularidade"] = []
+# v = view.View()
+# v.dados = {}
+# v.dados["tamanhos"] = map(lambda g: len(g), grades)
+# v.dados["pontos"] = map(lambda g: grade_pontuacao(g), grades)
+# v.dados["popularidade"] = []
 
-for g in grades:
-	for i in g:
-		v.dados["popularidade"].append(i)
+# for g in grades:
+	# for i in g:
+		# v.dados["popularidade"].append(i)
 
-v.exibir()
-'''
+# v.exibir()

@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 from random import randint, choice
-# from matricula import grade_pontuacao, grade_valida
 
 class Genetico():
 	'''Implementação das funçẽos de algoritmo genético.'''
@@ -11,8 +10,7 @@ class Genetico():
 		'''Retorna uma populacao com genomas aleatórios.'''
 		assert num_individuos > 0, "O tamanho da população deve ser maior que zero."
 		assert tam_genoma > 0, "O tamanho do genoma deve ser maior que zero."
-		# int_aleatorio = lambda x: 1 if randint(0, 5) == 0 else 0
-		int_aleatorio = lambda x: randint(0,1) 
+		int_aleatorio = lambda x: choice([0,1]) 
 		populacao = []
 		for i in range(num_individuos):
 			populacao.append(map(int_aleatorio, range(tam_genoma)))
@@ -25,8 +23,8 @@ class Genetico():
 	
 	def crossover(self, pai1, pai2, taxa_mutacao): 
 		'''Cruza dois genomas em um ponto aleatório, segundo a taxa de mutação definida.'''
-		assert len(pai1) == len(pai2), "Os pais devem ter o mesmo tamanho."
 		assert len(pai1) > 0 and len(pai2) > 0, "Os genomas não podem ser nulos."
+		assert len(pai1) == len(pai2), "Os pais devem ter o mesmo tamanho."
 		assert False not in [x in (0,1) for x in pai1], "Os genomas dos pais devem ser binários."
 		assert False not in [x in (0,1) for x in pai2], "Os genomas dos pais devem ser binários."
 		ponto_de_corte = randint(0, len(pai1))

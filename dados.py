@@ -105,15 +105,15 @@ assert set(dependencias.flat) == set([0,1]), "A matriz de dependências contém 
 
 # Histórico: lista de disciplinas em que o aluno foi aprovado
 # historico = csr_matrix(np.array(map(int, "100000000000000000000000000000000000000000000")))
-historico = csr_matrix(np.array(map(int, "111111111111111111011111110110000001000000011")))	# Allan Denis
+# historico = csr_matrix(np.array(map(int, "111111111111111111011111110110000001000000011")))	# Allan Denis
 # historico = csr_matrix(np.array(map(int, "111111111111111111111000000000000000000000000"))) # Arthur Novaes, Leilton
 # historico = csr_matrix(np.array(map(int, "111111111111111111101111110000100000010000011"))) # Hercílio
-# historico = csr_matrix(np.array(map(int, "111111111101101111111011000000000010000000000"))) # Ernande
 # historico = csr_matrix(np.array(map(int, "111111111101101111111011000000000010000000000"))) # Bruno Antonelly
 # historico = csr_matrix(np.array(map(int, "101101111111110101001011100110100001000000000"))) # Lucas
 # historico = csr_matrix(np.array(map(int, "111101111111111111111111100000100000000000011"))) # Denis Vieira
 # historico = csr_matrix(np.array(map(int, "111101111111110110101011100000100000000000010"))) # Kyo
-# historico = csr_matrix(np.array(map(int, "111111101111111111111011100000000000000000000"))) # Nywton
+# historico = csr_matrix(np.array(map(int, "111111111101101111111011000000000010000000000"))) # Ernande
+historico = csr_matrix(np.array(map(int, "111111101111111111111011100000000000000000000"))) # Nywton
 
 assert historico.shape[1] == qtd_disciplinas + 1, "Histórico com tamanho incorreto."
 assert set(historico.toarray()[0]) == set([0,1]), "O histórico contém valores inválidos."
