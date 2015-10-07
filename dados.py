@@ -43,7 +43,7 @@ horario = np.array([
 	map(int, "200100001000100000100000100100000100200012200"),
 	map(int, "200100001000100000100000100100000100200012200")
 ]).T
-horario = csr_matrix(horario)
+# horario = csr_matrix(horario)
 
 assert horario.shape[0] == qtd_disciplinas + 1
 

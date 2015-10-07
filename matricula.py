@@ -46,8 +46,8 @@ cursaveis = sorted(list(cursaveis - dados.disc_inativas))
 
 def grade_valida(g):
 	'''Retorna True se a grade não possuir conflitos.'''
-	assert g.nnz > 0, "A grade deve ter ao menos uma disciplina."
-	return g.data.max() == 1 # no máximo uma disciplina por aula
+	assert len(g) > 0, "A grade deve ter ao menos uma disciplina."
+	return max(g) == 1 # no máximo uma disciplina por aula
 
 # Transforma um horário linear em uma matriz semanal, para impressão amigável
 def formata_horario(h):
@@ -95,7 +95,7 @@ def busca_exaustiva(cursaveis, lim_grades):
 		discs_tmp = []	# Lista de disciplinas para cada tamanho de grade
 		inicio_tmp = agora()
 		for grade in combinations(cursaveis, i):
-			horario = map(lambda d: dados.horario.getrow(d), grade)
+			horario = map(lambda d: dados.horario[d], grade)
 			horario = reduce(lambda a, b: a + b, horario)
 			if grade_valida(horario):
 				discs_tmp.append(sorted(grade))
