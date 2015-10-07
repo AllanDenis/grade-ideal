@@ -4,11 +4,11 @@
 # Otimização de grade de disciplinas, visando maximizar o número de aulas por semana
 # ou juntar as folgas no mesmo dia
 
+from scipy.sparse import csr_matrix
+import numpy as np
 import dados, disciplina, view
 import time, math
 from itertools import combinations
-import numpy as np
-from scipy import linalg, sparse
 import algoritmo_genetico 
 
 agora = time.time
@@ -46,12 +46,14 @@ cursaveis = sorted(list(cursaveis - dados.disc_inativas))
 
 def grade_valida(g):
 	'''Retorna True se a grade não possuir conflitos.'''
-	assert len(g.flat) > 0, "A grade deve ter ao menos uma disciplina."
-	return max(g.flat) == 1 # no máximo uma disciplina por aula
+	assert g.nnz > 0, "A grade deve ter ao menos uma disciplina."
+	return g.data.max() == 1 # no máximo uma disciplina por aula
 
 # Transforma um horário linear em uma matriz semanal, para impressão amigável
 def formata_horario(h):
-	return h.reshape(dados.dias_por_semana, dados.aulas_por_dia).T
+	# ret = csr_matrix(h)
+	# help(ret.reshape)
+	return h.reshape((dados.dias_por_semana, dados.aulas_por_dia)).T
 
 def grade_pontuacao(g):
 	periodo_max = 8
@@ -93,13 +95,9 @@ def busca_exaustiva(cursaveis, lim_grades):
 		discs_tmp = []	# Lista de disciplinas para cada tamanho de grade
 		inicio_tmp = agora()
 		for grade in combinations(cursaveis, i):
-			horario = dados.horario[0].copy()
-			horario = map(lambda d: dados.horario[d], grade)
+			horario = map(lambda d: dados.horario.getrow(d), grade)
 			horario = reduce(lambda a, b: a + b, horario)
-			# for disc in grade:
-				# horario = horario + dados.disciplinas[disc]
 			if grade_valida(horario):
-				# discs_tmp.append((horario, sorted(grade), grade_pontuacao(horario)))
 				discs_tmp.append(sorted(grade))
 		if len(discs_tmp) > 0:
 			print "%d encontradas em %.3f segundos." % (len(discs_tmp), (agora() - inicio_tmp))
@@ -125,21 +123,21 @@ def busca_genetica(cursaveis):
 	'''Evolui para uma boa grade (possivelmente a melhor) usando algoritmo genético.'''
 	g = algoritmo_genetico.Genetico()
 	tam_genoma = len(cursaveis)
-	tam_populacao = 500
+	tam_populacao = 50
 	perc_corte = 80
-	mutacao = 30
+	mutacao = 20
 	geracoes = 500
 	populacao = g.populacao_inicial(tam_populacao, tam_genoma)
 	i, melhor, pior = 1, -1, 1
 	avalia_pontuacao = lambda x: grade_pontuacao(binario_para_indices(x, cursaveis))
 
-	while i < geracoes or melhor == 0:
+	while i < geracoes:
 		i += 1
 		# pior = avalia_pontuacao(populacao[-1])
-		# desvio = np.std(map(avalia_pontuacao, populacao))
-		media = np.mean(map(avalia_pontuacao, populacao))
+		desvio = np.std(map(avalia_pontuacao, populacao))
+		# media = np.mean(map(avalia_pontuacao, populacao))
 		melhor = avalia_pontuacao(populacao[0])
-		print "Geração %d:\tMédia:%.2f pts\t\tMelhor: %.2f pts\tDiscs.:\t" % (i, media, melhor), binario_para_indices(populacao[0], cursaveis)
+		print "Geração %d:\tDesvio:%.2f pts\t\tMelhor: %.2f pts\tDiscs.:\t" % (i, desvio, melhor), binario_para_indices(populacao[0], cursaveis)
 		populacao = g.selecao(populacao, avalia_pontuacao, perc_corte)
 		populacao = g.procriar(populacao, tam_populacao - len(populacao), mutacao)
 	return populacao[0]
@@ -165,7 +163,7 @@ inicio = agora()
 grades.sort(key=grade_pontuacao, reverse=True)
 print "Ordenação feita em %.3f segundos." % (agora() - inicio)
 
-for i in enumerate(grades[:]):#[:(5 if len(grades) > 5 else -1)]:
+for i in enumerate(grades[:5]):#[:(5 if len(grades) > 5 else -1)]:
 	print "\n(%d)\t%.2fpts\t" % (i[0] + 1, grade_pontuacao(i[1])), i[1]
 	print formata_horario(aulas_da_grade(i[1], dados.horario))
 
