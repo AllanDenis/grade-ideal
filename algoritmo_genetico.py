@@ -55,6 +55,6 @@ class Genetico():
 		assert len(populacao) > 0, "O tamanho da população deve ser maior que zero."
 		pai1, pai2 = choice(populacao), choice(populacao)
 		filhos = []
-		while len(filhos) < num_individuos:
+		while len(filhos) <= num_individuos:
 			filhos.extend(self.crossover(pai1, pai2, taxa_mutacao))
 		return populacao + filhos

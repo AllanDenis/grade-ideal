@@ -4,14 +4,13 @@
 # Otimização de grade de disciplinas, visando maximizar o número de aulas por semana
 # ou juntar as folgas no mesmo dia
 
-from scipy.sparse import csr_matrix
-import numpy as np
-import dados, disciplina, view
-import time, math
+from numpy import mean, std
+from time import time
+from math import isnan
 from itertools import combinations
-import algoritmo_genetico 
+import dados, disciplina, view, algoritmo_genetico 
 
-agora = time.time
+agora = time
 deps = dados.dependencias
 historico = dados.historico
 
@@ -23,19 +22,15 @@ cursaveis = cursaveis - historico
 
 # Para evitar erro de div. por zero na disciplina nula e não permitir como cursável após divisão inteira
 somaReq[0] = -2 # Qualquer valor < -1
-for i in range(cursaveis.shape[1] - 1):
-	cursaveis[0,i] //= somaReq[i]
+cursaveis //= somaReq
 somaReq[0] = 0
-
-# Transforma em lista
-cursaveis = list(cursaveis.getA()[0])
 
 # Se o vetor de aprovação for inconsistente (disciplinas cumpridas sem todos os requisitos),
 # o vetor de cursáveis terá valores negativos.
 cursaveis = map(lambda x: 0 if x < 0 else x, cursaveis)
 	
 print "Vetor de requisitos (SC):\t", "".join(map(str, somaReq))
-print "Vetor de aprovação (AP):\t", "".join(map(str, historico.toarray()[0]))
+print "Vetor de aprovação (AP):\t", "".join(map(str, historico))
 print "Vetor de cursáveis (DC):\t",		"".join(map(str, cursaveis))
 print "Calculando as melhores grades para você. Aguarde..."
 
@@ -64,10 +59,10 @@ def grade_pontuacao(g):
 	pontos = list(aulas).count(1) # número de aulas
 	bonus = 0 # % sobre os pontos
 	bonus += 10e-2 * dias_vazios	# Privilegia dias de folga
-	bonus += 2e-2 * (periodo_max - (np.mean(g)) / 10) # Privilegia as primeiras disciplinas
-	bonus -= 1e-2 * (np.std(g)/np.mean(g)) # Penaliza o espalhamento de disciplinas
+	bonus += 2e-2 * (periodo_max - (mean(g)) / 10) # Privilegia as primeiras disciplinas
+	bonus -= 1e-2 * (std(g)/mean(g)) # Penaliza o espalhamento de disciplinas
 	pontos *= 1 + bonus
-	return 0 if math.isnan(pontos) else pontos
+	return 0 if isnan(pontos) else pontos
 
 # Retorna uma matriz contendo o horário semanal das disciplinas da grade g
 def aulas_da_grade(g, horario):
@@ -134,8 +129,8 @@ def busca_genetica(cursaveis):
 	while i < geracoes:
 		i += 1
 		# pior = avalia_pontuacao(populacao[-1])
-		desvio = np.std(map(avalia_pontuacao, populacao))
-		# media = np.mean(map(avalia_pontuacao, populacao))
+		desvio = std(map(avalia_pontuacao, populacao))
+		# media = mean(map(avalia_pontuacao, populacao))
 		melhor = avalia_pontuacao(populacao[0])
 		print "Geração %d:\tDesvio:%.2f pts\t\tMelhor: %.2f pts\tDiscs.:\t" % (i, desvio, melhor), binario_para_indices(populacao[0], cursaveis)
 		populacao = g.selecao(populacao, avalia_pontuacao, perc_corte)
