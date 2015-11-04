@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 from scipy.sparse import csr_matrix
@@ -19,3 +19,5 @@ class Disciplina():
 		self.horario = horario
 		# self.ativa = True
 		
+	def __str__():
+		pass

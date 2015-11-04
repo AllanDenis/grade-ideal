@@ -10,7 +10,6 @@ class View():
 		self.dados = None
 	
 	def exibir(self):
-		print "Inicio: exibir()"
 		for i in self.dados.keys():
 			if len(self.dados[i]) > 0: continue
 			else: return
@@ -43,8 +42,4 @@ class View():
 		show(hplot(	hist_pontuacao,
 					hist_tamanho,
 					hist_pop
-		))
-		
-		print "Fim: exibir()"
-		
-
+		))		
