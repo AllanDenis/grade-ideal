@@ -1,5 +1,6 @@
-from flask import Flask
+from flask import Flask, jsonify
 import matricula
+import modelo
 
 app = Flask(__name__)
 
@@ -13,8 +14,11 @@ def hello():
 
 @app.route('/disciplinas')
 def lista_disciplinas():
-    # show the user profile for that user
-    return 'Lista de disciplinas'
+    disc = modelo.disciplinas()
+    disc = disc.select().get()
+    # print(dir(disc))
+    disc = {1:"orge",2:"calc"}
+    return jsonify(disc)
 
 @app.route('/post/<int:post_id>')
 def show_post(post_id):
@@ -22,5 +26,5 @@ def show_post(post_id):
     return 'Post %d' % post_id
 
 if __name__ == '__main__':
-    # app.debug = True
+    app.debug = True
     app.run(host='0.0.0.0')
