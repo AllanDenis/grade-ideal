@@ -10,7 +10,7 @@ from time import time
 from math import isnan
 from itertools import combinations, compress
 from functools import reduce
-import dados, disciplina, algoritmo_genetico 
+import dados, disciplina, algoritmo_genetico
 
 agora = time
 deps = dados.dependencias
@@ -77,7 +77,7 @@ def aulas_da_grade(g, horario):
 def binario_para_indices(binario, iteravel):
 	'''Transforma as posições dos elementos 1 de uma lista binária em índices de um iterável.'''
 	assert all([x in (0,1) for x in binario]), "A lista binária deve conter apenas zeros e uns. %s" % binario
-	assert len(binario) == len(iteravel), "As listas devem ter o mesmo tamanho. %d != %d" % (len(binario), len(iteravel)) 
+	assert len(binario) == len(iteravel), "As listas devem ter o mesmo tamanho. %d != %d" % (len(binario), len(iteravel))
 	if len(binario) > 0:
 		return list(compress(iteravel, binario))
 	else:
@@ -138,6 +138,7 @@ def busca_genetica(genotipo, geracoes):
 		populacao = g.procriar(populacao, tam_populacao - len(populacao), mutacao)
 	return populacao[0]
 
+'''
 inicio = agora()
 #==========================================================
 grade = busca_genetica(cursaveis, 500)
@@ -149,7 +150,6 @@ print("\n(%d)\t%.2fpts\t" % (1, grade_pontuacao(grade)) + "%.2f" % grade_pontuac
 print(formata_horario(aulas_da_grade(grade, dados.horario)))
 #==========================================================
 # grades = busca_gulosa(cursaveis)
-'''
 grades = busca_exaustiva(cursaveis, 5)
 
 print("\nTotal de %d grades encontradas em %-.3fs." % (len(grades), agora() - inicio))
@@ -163,16 +163,4 @@ for i in enumerate(grades[:5]):#[:(5 if len(grades) > 5 else -1)]:
 	print("\n(%d)\t%.2fpts\t" % (i[0] + 1, grade_pontuacao(i[1])) + str(i[1]))
 	print(formata_horario(aulas_da_grade(i[1], dados.horario)))
 
-'''		
-
-# v = view.View()
-# v.dados = {}
-# v.dados["tamanhos"] = map(lambda g: len(g), grades)
-# v.dados["pontos"] = map(lambda g: grade_pontuacao(g), grades)
-# v.dados["popularidade"] = []
-
-# for g in grades:
-	# for i in g:
-		# v.dados["popularidade"].append(i)
-
-# v.exibir()
+'''
