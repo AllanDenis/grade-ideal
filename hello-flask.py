@@ -1,7 +1,6 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask.ext.cors import CORS
-import matricula
-import modelo
+import matricula, modelo
 
 app = Flask(__name__)
 CORS(app)
@@ -20,10 +19,12 @@ def lista_disciplinas():
         disciplinas.append(disc_tmp)
     return jsonify(enumerate(disciplinas))
 
-@app.route('/grade', methods = ['POST'])
-def melhor_grade(post_id):
-    # show the post with the given id, the id is an integer
-    return 'Post %d' % post_id
+@app.route('/grade', methods = ['GET', 'POST'])
+def melhor_grade():
+    if request.method == 'POST':
+        return "JSON Message: " + str(jsonify(request.data))
+    elif request.method == 'GET':
+        return "Você usou GET. Este endereço só funciona com POST. :("
 
 if __name__ == '__main__':
     app.debug = True
