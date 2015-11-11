@@ -18,6 +18,10 @@ class Disciplina():
 		self.periodo = periodo
 		self.horario = horario
 		# self.ativa = True
-		
+
 	def __str__():
-		pass
+		string = self.id
+		string += ": %s" % self.sigla
+		string += " (%s," % self.nome
+		string += " %sº período)" % self.sigla
+		return string
