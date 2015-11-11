@@ -19,3 +19,4 @@ class Disciplina(ModeloBase):
 class Horario(ModeloBase):
     disciplina_id = ForeignKeyField(Disciplina, related_name='Disciplina')
     aulas = IntegerField()
+    
