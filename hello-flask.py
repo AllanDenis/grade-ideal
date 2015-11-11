@@ -19,13 +19,9 @@ def lista_disciplinas():
         disciplinas.append(disc_tmp)
     return jsonify(enumerate(disciplinas))
 
-@app.route('/grade', methods = ['GET', 'POST'])
+@app.route('/grade', methods = ['POST'])
 def melhor_grade():
-    if request.method == 'POST':
-        return "JSON Message: " + str(jsonify(request.data))
-    elif request.method == 'GET':
-        return "Você usou GET. Este endereço só funciona com POST. :("
-
+    return "JSON Message: " + str(request.data)
 if __name__ == '__main__':
     app.debug = True
     app.run(host='0.0.0.0')
