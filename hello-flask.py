@@ -14,11 +14,23 @@ def hello():
 
 @app.route('/disciplinas')
 def lista_disciplinas():
-    disc = modelo.disciplinas()
-    disc = disc.select().get()
-    # print(dir(disc))
-    disc = {1:"orge",2:"calc"}
-    return jsonify(disc)
+    disciplinas = []
+    # for d in modelo.Disciplina.select():
+        # disciplinas.append(dict(d))
+    tabela = modelo.Disciplina.select()
+    for d in tabela:
+        disc_tmp = {
+            "id"        :   d.id,
+            "nome"      :   d.nome,
+            "sigla"     :   d.sigla,
+            "periodo"   :   d.periodo,
+            "ativa"     :   d.ativa,
+            # "cursos"    :   d.cursos,
+        }
+        disciplinas.append(dict(disc_tmp))
+    # help(disciplinas[0])
+    # disciplinas = {1:"orge",2:"calc"}
+    return jsonify(enumerate(disciplinas))
 
 @app.route('/post/<int:post_id>')
 def show_post(post_id):

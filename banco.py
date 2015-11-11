@@ -1,3 +1,4 @@
+from flask import Flask
 from peewee import *
 
 usuario, senha = 'root', '87654321'
