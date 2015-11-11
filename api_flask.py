@@ -24,7 +24,7 @@ def lista_disciplinas():
 @app.route('/grade', methods = ['POST'])
 def melhor_grade():
     if request.json:
-        return "Dados informados (POST): " + str(request.json) + '\n'
+        return "Dados informados (POST): " + str([d for d in request.json]) + '\n'
     else:
         return None
 
