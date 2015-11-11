@@ -14,12 +14,11 @@ class Genetico():
 		populacao = []
 		for i in range(num_individuos):
 			populacao.append(map(int_aleatorio, range(tam_genoma)))
-			# populacao.append([0] * tam_genoma)
 		return populacao
 		
 	def fitness(self, genoma):
 		'''Função que mede a adequação do genoma ao meio.'''
-		return 0
+		pass
 	
 	def crossover(self, pai1, pai2, taxa_mutacao): 
 		'''Cruza dois genomas em um ponto aleatório, segundo a taxa de mutação definida.'''
@@ -39,7 +38,7 @@ class Genetico():
 		assert len(genoma) > 0, "O genoma não pode ser nulo."
 		assert taxa_mutacao >= 0, "A taxa de mutação não pode ser negativa."
 		altera_genes = lambda x: x if randint(0, 100) > taxa_mutacao else 1 - x
-		return map(altera_genes, genoma)
+		return [altera_genes(x) for x in genoma]
 	
 	def selecao(self, populacao, func_fitness, perc_corte):
 		'''Retorna os melhores membros da população segundo a
@@ -55,6 +54,6 @@ class Genetico():
 		assert len(populacao) > 0, "O tamanho da população deve ser maior que zero."
 		pai1, pai2 = choice(populacao), choice(populacao)
 		filhos = []
-		while len(filhos) < num_individuos:
+		while len(filhos) <= num_individuos:
 			filhos.extend(self.crossover(pai1, pai2, taxa_mutacao))
 		return populacao + filhos
