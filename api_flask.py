@@ -30,4 +30,5 @@ def melhor_grade():
 
 if __name__ == '__main__':
     app.debug = True
+    app.use_reloader = True
     app.run(host='0.0.0.0')
