@@ -3,21 +3,26 @@
 
 from scipy.sparse import csr_matrix
 import numpy as np
+import modelo
 
 aulas_por_dia = 4
 dias_por_semana = 5
 qtd_disciplinas = 44
 
-# Disciplinas pertencentes a um curso
 class Disciplina():
-	# Para melhor legibilidade
-	def __init__(self, id, nome, sigla, periodo, horario):
-		self.id = id
-		self.nome = nome
-		self.sigla = sigla
-		self.periodo = periodo
-		self.horario = horario
-		# self.ativa = True
-		
+	'''Disciplinas pertencentes a um curso'''
+	def __init__(self):
+		self.id			=	modelo.Disciplina.select().id
+		self.nome		=	d.nome
+		self.sigla		=	d.sigla
+		self.periodo	=	d.periodo
+		self.ativa		=	d.ativa
+		self.horario = None
+
+
 	def __str__():
-		pass
+		string = self.id
+		string += ": %s" % self.sigla
+		string += " (%s," % self.nome
+		string += " %sº período)" % self.sigla
+		return string

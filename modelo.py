@@ -13,9 +13,10 @@ class Disciplina(ModeloBase):
     nome = CharField(unique=True)
     sigla = CharField(unique=True)
     periodo = IntegerField()
-    cursos = ForeignKeyField(Curso, related_name='Disciplina')
+    curso = ForeignKeyField(Curso, related_name='Disciplina')
     ativa = BooleanField()
 
 class Horario(ModeloBase):
     disciplina_id = ForeignKeyField(Disciplina, related_name='Disciplina')
     aulas = IntegerField()
+    
