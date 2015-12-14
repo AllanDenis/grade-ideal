@@ -9,3 +9,9 @@ db = MySQLDatabase(
             passwd=senha,
             #host=host,
     )
+
+def before_request_handler():
+    db.connect()
+
+def after_request_handler():
+    db.close()
