@@ -19,12 +19,14 @@ def lista_disciplinas():
             "ativa"     :   d.ativa,
         }
         disciplinas.append(disc_tmp)
-    return jsonify(enumerate(disciplinas))
+    return jsonify(id=disciplinas.id)
 
 @app.route('/grade', methods = ['POST'])
 def melhor_grade():
     if request.json:
-        return "Dados informados (POST): " + str([d for d in request.json]) + '\n'
+        grade = jsonify(enumerate(request.json))
+        grade = jsonify({"grades" : matricula.grade_ideal(request.json, 1, 6)})
+        return grade
     else:
         return None
 

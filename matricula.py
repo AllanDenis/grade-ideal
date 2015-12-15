@@ -5,6 +5,7 @@
 # ou juntar as folgas no mesmo dia
 
 from sys import stdout
+import numpy as np
 from numpy import mean, std
 from time import time
 from math import isnan
@@ -18,30 +19,40 @@ historico = dados.historico
 
 somaReq = deps.sum(axis=0)
 
-# Lista de disciplinas que o aluno pode cursar.
-cursaveis = historico.dot(deps)
-cursaveis = cursaveis - historico
+def cursaveis(historico, dependencias, historico_binario=True):
+	'''Lista de disciplinas que o aluno pode cursar.'''
+	if not historico_binario:
+		print("Histórico não binário: ", historico)
+		hist_bin = list()
+		for i in range(len(dados.historico)):
+			hist_bin.append(0)
+		for i in historico:
+			hist_bin[i] = 1
+		hist_bin[0] = 1
+		historico = np.array(hist_bin).T
 
-# Para evitar erro de div. por zero na disciplina nula e não permitir como cursável após divisão inteira
-somaReq[0] = -2 # Qualquer valor < -1
-cursaveis //= somaReq
-somaReq[0] = 0
+	discs_cursaveis = historico.dot(dependencias)
+	discs_cursaveis = discs_cursaveis - historico
 
-# Se o vetor de aprovação for inconsistente (disciplinas cumpridas sem todos os requisitos),
-# o vetor de cursáveis terá valores negativos.
-cursaveis = map(lambda x: 0 if x < 0 else x, cursaveis)
-cursaveis = list(cursaveis)
+	# Para evitar erro de div. por zero na disciplina nula e não permitir como cursável após divisão inteira
+	somaReq[0] = -2 # Qualquer valor < -1
+	discs_cursaveis //= somaReq
+	somaReq[0] = 0
+
+	# Se o vetor de aprovação for inconsistente (disciplinas cumpridas sem todos os requisitos),
+	# o vetor de cursáveis terá valores negativos.
+	discs_cursaveis = map(lambda x: 0 if x < 0 else x, discs_cursaveis)
+	discs_cursaveis = list(discs_cursaveis)
+	# Obtém os IDs das disciplinas cursáveis
+	discs_cursaveis = compress(range(len(discs_cursaveis)), discs_cursaveis)
+	discs_cursaveis = list(set(discs_cursaveis) - dados.disc_inativas)
+	discs_cursaveis.sort()
+	return discs_cursaveis
 
 print("Requisitos:\t%s" % "".join(map(str, somaReq)))
 print("Histórico:\t%s" % "".join(map(str, historico)))
-print("Cursáveis:\t%s" % "".join(map(str, cursaveis)))
+print("Cursáveis:\t%s" % "".join(map(str, cursaveis(historico, deps))))
 print("Calculando as melhores grades para você. Aguarde...")
-
-# Obtém os IDs das disciplinas cursáveis
-cursaveis = compress(range(len(cursaveis)), cursaveis)
-cursaveis = list(set(cursaveis) - dados.disc_inativas)
-cursaveis.sort()
-
 
 def grade_valida(g):
 	__doc__ = '''Retorna True se a grade não possuir conflitos.'''
@@ -84,9 +95,10 @@ def binario_para_indices(binario, iteravel):
 		return []
 
 # Busca exaustiva (todas as combinações possíveis)
-def busca_exaustiva(cursaveis, lim_grades):
+def busca_exaustiva(cursaveis, lim_grades, max_disciplinas=0):
 	grades = []
-	for i in range(1, len(cursaveis) + 1):
+	limite_disciplinas = len(cursaveis) + 1 if max_disciplinas == 0 else max_disciplinas
+	for i in range(1, limite_disciplinas + 1):
 		print("Buscando grades com %d disciplina%s..." % (i, ("s" if i > 1 else "")))
 		discs_tmp = []	# Lista de disciplinas para cada tamanho de grade
 		inicio_tmp = agora()
@@ -116,51 +128,49 @@ def busca_gulosa(cursaveis, lim_grades):
 		cursaveis = cursaveis[1:] + cursaveis[0:1]
 	return grades
 
-def busca_genetica(genotipo, geracoes):
-	'''Evolui para uma boa grade (possivelmente a melhor) usando algoritmo genético.'''
-	g = algoritmo_genetico.Genetico()
-	tam_genoma = len(genotipo)
-	tam_populacao = 50
-	perc_corte = 80
-	mutacao = 30
-	populacao = g.populacao_inicial(tam_populacao, tam_genoma)
-	i, melhor, pior = 0, -1, 1
-	avalia_pontuacao = lambda x: grade_pontuacao(list(compress(genotipo, x)))
 
-	while i < geracoes:
-		i += 1
-		# pior = avalia_pontuacao(populacao[-1])
-		desvio = std(list(map(avalia_pontuacao, populacao)))
-		# media = mean(map(avalia_pontuacao, populacao))
-		melhor = avalia_pontuacao(populacao[0])
-		print("Geração %d:\tDesvio:%.2f pts\t\tMelhor: %.2f pts\tDiscs.:\t%s" % (i, desvio, melhor, list(compress(genotipo, populacao[0]))))
-		populacao = g.selecao(populacao, avalia_pontuacao, perc_corte)
-		populacao = g.procriar(populacao, tam_populacao - len(populacao), mutacao)
-	return populacao[0]
+# def busca_genetica(genotipo, geracoes):
+# 	'''Evolui para uma boa grade (possivelmente a melhor) usando algoritmo genético.'''
+# 	g = algoritmo_genetico.Genetico()
+# 	tam_genoma = len(genotipo)
+# 	tam_populacao = 50
+# 	perc_corte = 80
+# 	mutacao = 30
+# 	populacao = g.populacao_inicial(tam_populacao, tam_genoma)
+# 	i, melhor, pior = 0, -1, 1
+# 	avalia_pontuacao = lambda x: grade_pontuacao(list(compress(genotipo, x)))
+#
+# 	while i < geracoes:
+# 		i += 1
+# 		# pior = avalia_pontuacao(populacao[-1])
+# 		desvio = std(list(map(avalia_pontuacao, populacao)))
+# 		# media = mean(map(avalia_pontuacao, populacao))
+# 		melhor = avalia_pontuacao(populacao[0])
+# 		print("Geração %d:\tDesvio:%.2f pts\t\tMelhor: %.2f pts\tDiscs.:\t%s" % (i, desvio, melhor, list(compress(genotipo, populacao[0]))))
+# 		populacao = g.selecao(populacao, avalia_pontuacao, perc_corte)
+# 		populacao = g.procriar(populacao, tam_populacao - len(list(populacao)), mutacao)
+# 	return populacao[0]
 
-'''
-inicio = agora()
-#==========================================================
-grade = busca_genetica(cursaveis, 500)
-# grade = binario_para_indices(grade, cursaveis)
-grade = compress(cursaveis, grade)
-grade = list(grade)
-print(grade)
-print("\n(%d)\t%.2fpts\t" % (1, grade_pontuacao(grade)) + "%.2f" % grade_pontuacao(grade))
-print(formata_horario(aulas_da_grade(grade, dados.horario)))
-#==========================================================
-# grades = busca_gulosa(cursaveis)
-grades = busca_exaustiva(cursaveis, 5)
 
-print("\nTotal de %d grades encontradas em %-.3fs." % (len(grades), agora() - inicio))
-stdout.write("Ordenando as grades...")
-inicio = agora()
-# Ordena as grades por quantidade de disciplinas e seus períodos
-grades.sort(key=grade_pontuacao, reverse=True)
-print("Ordenação feita em %.3f segundos." % (agora() - inicio))
+def grade_ideal(historico, lim_grades=5, max_disciplinas=0):
+	inicio = agora()
+	grades = busca_exaustiva(cursaveis(historico, deps, False), lim_grades, max_disciplinas)
 
-for i in enumerate(grades[:5]):#[:(5 if len(grades) > 5 else -1)]:
-	print("\n(%d)\t%.2fpts\t" % (i[0] + 1, grade_pontuacao(i[1])) + str(i[1]))
-	print(formata_horario(aulas_da_grade(i[1], dados.horario)))
+	#==========================================================
+	#print("\nTotal de %d grades encontradas em %-.3fs." % (len(grades), agora() - inicio))
+	#stdout.write("Ordenando as grades...")
+	#inicio = agora()
+	# Ordena as grades por quantidade de disciplinas e seus períodos
+	grades.sort(key=grade_pontuacao, reverse=True)
+	#print("Ordenação feita em %.3f segundos." % (agora() - inicio))
 
-'''
+	for i in enumerate(grades[:lim_grades]):#[:(5 if len(grades) > 5 else -1)]:
+		print("\n(%d)\t%.2fpts\t" % (i[0] + 1, grade_pontuacao(i[1])) + str(i[1]))
+		print(formata_horario(aulas_da_grade(i[1], dados.horario)))
+
+	return grades[:lim_grades]
+
+max_grades = 5
+max_disciplinas = 6
+meu_historico = [1,2,3,4,6,7,8,9,11,12,13,14,15,19,31,33,40]
+# print(grade_ideal(meu_historico, max_grades, max_disciplinas))

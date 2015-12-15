@@ -18,7 +18,7 @@ Linhas: aulas em ordem cronológica (seg1, seg2, ..., sex3, sex4)
 Elementos: {
 	0: sem aula da disciplina nesse dia
 	1: com aula da disciplina nesse dia
-	2: disciplina inativa ou não ofertada 
+	2: disciplina inativa ou não ofertada
 }
 '''
 horario = [
@@ -51,7 +51,7 @@ horario = np.array(horario).T
 Matriz de dependências (MD), incluindo a disciplina nula (se o elemento a_ij == 1,
 então a disciplina i depende da disciplina j,
 caso contrário, a_ij == 0).
-TODO: testar formatos de matriz esparsa (http://docs.scipy.org/doc/scipy/reference/sparse.html#sparse-matrix-classes). 
+TODO: testar formatos de matriz esparsa (http://docs.scipy.org/doc/scipy/reference/sparse.html#sparse-matrix-classes).
 '''
 dependencias = [
 	"011111011100001001011010000010011011111000111",
@@ -106,7 +106,7 @@ dependencias = np.array(dependencias)
 
 # Histórico: lista de disciplinas em que o aluno foi aprovado
 # historico = "110000000000000000000000000000000000000000000"
-# historico = "101111111111111111011111110110000001000000011"	# Allan Denis
+historico = "101111111111111111011111110110000001000000011"	# Allan Denis
 # historico = "111111111111111111111000000000000000000000000" # Arthur Novaes, Leilton
 # historico = "111111111111111111101111111111100000010000011" # Hercílio
 # historico = "111111111101101111111011000000000010000000000" # Bruno Antonelly
@@ -114,7 +114,7 @@ dependencias = np.array(dependencias)
 # historico = "111101111111110110101011100000100000000000010" # Kyo
 # historico = "111111111101101111111011000000000010000000000" # Ernande
 # historico = "111111101111111111111011100000000000000000000" # Nywton
-historico = "111111111111111111111111111111100000000000000" # Márcio
+# historico = "111111111111111111111111111111100000000000000" # Márcio
 # historico = "111101111111111111111111100000100000000000011"	# Denis Vieira
 # historico = "111111111111111100000000010000000000000000000"	# Duda
 # historico = "101101011110110001001000000000000000000000010"	# Coru
