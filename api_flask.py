@@ -19,7 +19,7 @@ def lista_disciplinas():
             "ativa"     :   d.ativa,
         }
         disciplinas.append(disc_tmp)
-    return jsonify(id=disciplinas.id)
+    return jsonify({"disciplinas" : disciplinas})
 
 @app.route('/grade', methods = ['POST'])
 def melhor_grade():
