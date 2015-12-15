@@ -24,11 +24,12 @@ def cursaveis(historico, dependencias, historico_binario=True):
 	if not historico_binario:
 		print("Histórico não binário: ", historico)
 		hist_bin = list()
+		historico.append(0) #Disciplina nula
 		for i in range(len(dados.historico)):
 			hist_bin.append(0)
 		for i in historico:
-			hist_bin[i] = 1
-		hist_bin[0] = 1
+			if 0 <= i < len(dados.historico):
+				hist_bin[i] = 1
 		historico = np.array(hist_bin).T
 
 	discs_cursaveis = historico.dot(dependencias)
