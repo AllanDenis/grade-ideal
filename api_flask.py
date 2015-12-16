@@ -2,8 +2,9 @@ from flask import Flask, jsonify, request
 from flask.ext.cors import CORS
 from flask.ext.compress import Compress
 import matricula, modelo
+from banco import app
 
-app = Flask(__name__)
+#app = Flask(__name__)
 CORS(app)
 Compress(app)
 

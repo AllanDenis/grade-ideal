@@ -5,6 +5,8 @@ usuario, senha = 'root', '87654321'
 host, banco = 'localhost', 'gdsw_matricula'
 
 app = Flask(__name__)
+CORS(app)
+Compress(app)
 
 db = MySQLDatabase(
             banco,
@@ -20,6 +22,7 @@ db.get_conn().ping(True)
 @app.before_request
 def _db_connect():
     db.connect()
+    print("A conexão com o banco foi aberta.")
 
 # This hook ensures that the connection is closed when we've finished
 # processing the request.
@@ -27,3 +30,4 @@ def _db_connect():
 def _db_close():
     if not db.is_closed():
         db.close()
+        print("A conexão com o banco foi fechada.")
