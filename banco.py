@@ -1,5 +1,7 @@
 from flask import Flask
 from peewee import *
+from flask.ext.cors import CORS
+from flask.ext.compress import Compress
 
 usuario, senha = 'root', '87654321'
 host, banco = 'localhost', 'gdsw_matricula'
