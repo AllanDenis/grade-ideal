@@ -3,7 +3,7 @@ from flask import Flask, jsonify, request
 import matricula, modelo
 from banco import app
 
-#app = Flask(__name__)
+#app = Flask(__name__
 #CORS(app)
 #Compress(app)
 
@@ -19,6 +19,7 @@ def lista_disciplinas():
             "ativa"     :   d.ativa,
         }
         disciplinas.append(disc_tmp)
+    return jsonify({"texto":"LOREM IPSUM"})
     return jsonify({"disciplinas" : disciplinas})
 
 @app.route('/grade', methods = ['POST'])
