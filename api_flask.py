@@ -1,32 +1,37 @@
 from flask import Flask, jsonify, request
-
-import matricula, modelo
 from banco import app
+import matricula, modelo
 
-#app = Flask(__name__
-#CORS(app)
-#Compress(app)
-
-@app.route('/disciplinas', methods = ['GET'])
 def lista_disciplinas():
     disciplinas = []
     for d in modelo.Disciplina.select():
-        disc_tmp = {
+        # aulas = matricula.aulas_da_grade(d.id, matricula.horario)
+        # aulas = matricula.binario_para_indices(aulas, range(len(aulas)))
+        disciplinas.append({
             "id"        :   d.id,
             "nome"      :   d.nome,
             "sigla"     :   d.sigla,
             "periodo"   :   d.periodo,
             "ativa"     :   d.ativa,
-        }
-        disciplinas.append(disc_tmp)
-    return jsonify({"disciplinas" : disciplinas})
+            # "horario"   :   aulas,
+        })
+    return disciplinas
 
-@app.route('/grade', methods = ['POST'])
+@app.route('/disciplinas', methods = ['GET'])
+def disciplinas_list_api():
+    return jsonify({"disciplinas" : lista_disciplinas()})
+
+@app.route('/grades', methods = ['POST'])
 def melhor_grade():
+    max_grades = 3
+    max_disciplinas = 6
     if request.json:
-        grade = jsonify(enumerate(request.json))
-        grade = jsonify({"grades" : matricula.grade_ideal(request.json, 1, 6)})
-        return grade
+        disciplinas_id = matricula.grade_ideal(
+                request.json, max_grades, max_disciplinas
+            )
+        # disciplinas_list = modelo.Disciplina.select().where(id in disciplinas_id).get()
+        grades = {"grades" : disciplinas_id}
+        return jsonify(grades)
     else:
         return None
 

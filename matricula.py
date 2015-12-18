@@ -16,6 +16,7 @@ import dados, disciplina, algoritmo_genetico
 agora = time
 deps = dados.dependencias
 historico = dados.historico
+horario = dados.horario	
 
 somaReq = deps.sum(axis=0)
 
@@ -31,7 +32,6 @@ def cursaveis(historico, dependencias, historico_binario=True):
 			if 0 <= i < len(dados.historico):
 				hist_bin[i] = 1
 		historico = np.array(hist_bin).T
-
 	discs_cursaveis = historico.dot(dependencias)
 	discs_cursaveis = discs_cursaveis - historico
 
