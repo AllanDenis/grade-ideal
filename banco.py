@@ -7,8 +7,8 @@ usuario, senha = 'root', '87654321'
 host, banco = 'localhost', 'gdsw_matricula'
 
 app = Flask(__name__)
-CORS(app)
 Compress(app)
+CORS(app)
 
 db = MySQLDatabase(
             banco,

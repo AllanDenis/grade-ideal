@@ -2,7 +2,25 @@ from flask import Flask, jsonify, request
 from banco import app
 import matricula, modelo
 
+@app.route('/echo', methods = ['GET', 'POST', 'PATCH', 'PUT', 'DELETE'])
+def api_echo():
+    if request.method == 'GET':
+        return "ECHO: GET\n"
+
+    elif request.method == 'POST':
+        return "ECHO: POST\n"
+
+    elif request.method == 'PATCH':
+        return "ECHO: PACTH\n"
+
+    elif request.method == 'PUT':
+        return "ECHO: PUT\n"
+
+    elif request.method == 'DELETE':
+        return "ECHO: DELETE"
+
 def lista_disciplinas():
+    '''Retorna a lista de todas as disciplinas.'''
     disciplinas = []
     for d in modelo.Disciplina.select():
         # aulas = matricula.aulas_da_grade(d.id, matricula.horario)
@@ -16,6 +34,21 @@ def lista_disciplinas():
             # "horario"   :   aulas,
         })
     return disciplinas
+
+def disciplina_por_id(id):
+    '''Retorna a disciplina cujo ID foi informado, se houver.'''
+    disciplina = modelo.Disciplina.select().where(Disciplina.id == id).execute();
+    return  {
+                "id"        :   disciplina.id,
+                "nome"      :   disciplina.nome,
+                "sigla"     :   disciplina.sigla,
+                "periodo"   :   disciplina.periodo,
+                "ativa"     :   disciplina.ativa,
+            }
+
+@app.route('/disciplina/{int:id}', methods = ['GET'])
+def disciplina_api():
+    return jsonify(disciplina_por_id(id))
 
 @app.route('/disciplinas', methods = ['GET'])
 def disciplinas_list_api():
