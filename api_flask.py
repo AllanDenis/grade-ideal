@@ -2,22 +2,28 @@ from flask import Flask, jsonify, request
 from banco import app
 import matricula, modelo
 
-@app.route('/echo', methods = ['GET', 'POST', 'PATCH', 'PUT', 'DELETE'])
+@app.route('/echo', methods = ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'])
 def api_echo():
-    if request.method == 'GET':
-        return "ECHO: GET\n"
+    return "ECHO: " + request.method
 
-    elif request.method == 'POST':
-        return "ECHO: POST\n"
+@app.errorhandler(404)
+def not_found(error=None):
+    message = {
+            'status': 404,
+            'message': 'Not Found: ' + request.url,
+    }
+    resp = jsonify(message)
+    resp.status_code = 404
+    return resp
 
-    elif request.method == 'PATCH':
-        return "ECHO: PACTH\n"
+@app.route('/users/<userid>', methods = ['GET'])
+def api_users(userid):
+    users = {'1':'john', '2':'steve', '3':'bill'}
 
-    elif request.method == 'PUT':
-        return "ECHO: PUT\n"
-
-    elif request.method == 'DELETE':
-        return "ECHO: DELETE"
+    if userid in users:
+        return jsonify({userid:users[userid]})
+    else:
+        return not_found()
 
 def lista_disciplinas():
     '''Retorna a lista de todas as disciplinas.'''
@@ -35,9 +41,12 @@ def lista_disciplinas():
         })
     return disciplinas
 
-def disciplina_por_id(id):
+def disciplina_por_id(id_desejado):
     '''Retorna a disciplina cujo ID foi informado, se houver.'''
-    disciplina = modelo.Disciplina.select().where(Disciplina.id == id).execute();
+    disciplina = modelo.Disciplina
+    disciplina = disciplina.select()
+    disciplina = disciplina.where(modelo.Disciplina.id == id_desejado)
+    disciplina = disciplina[0]
     return  {
                 "id"        :   disciplina.id,
                 "nome"      :   disciplina.nome,
@@ -46,9 +55,9 @@ def disciplina_por_id(id):
                 "ativa"     :   disciplina.ativa,
             }
 
-@app.route('/disciplina/{int:id}', methods = ['GET'])
-def disciplina_api():
-    return jsonify(disciplina_por_id(id))
+@app.route('/disciplina/<int:id>', methods = ['GET'])
+def disciplina_api(id):
+    return jsonify({"disciplina" : disciplina_por_id(id)})
 
 @app.route('/disciplinas', methods = ['GET'])
 def disciplinas_list_api():
@@ -59,12 +68,13 @@ def melhor_grade():
     max_grades = 3
     max_disciplinas = 6
     if request.json:
-        disciplinas_id = matricula.grade_ideal(
+        grades = matricula.grade_ideal(
                 request.json, max_grades, max_disciplinas
             )
-        # disciplinas_list = modelo.Disciplina.select().where(id in disciplinas_id).get()
-        grades = {"grades" : disciplinas_id}
-        return jsonify(grades)
+        grades_json = []
+        for grade in grades:
+            grades_json.append([disciplina_por_id(id) for id in grade])
+        return jsonify({"grades" : grades_json})
     else:
         return None
 
