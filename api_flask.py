@@ -1,5 +1,4 @@
 from flask import Flask, jsonify, request
-from itertools import compress
 from banco import app
 import matricula, modelo, dados
 
