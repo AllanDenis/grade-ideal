@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, request
+from itertools import compress
 from banco import app
-import matricula, modelo
+import matricula, modelo, dados
 
 @app.route('/echo', methods = ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'])
 def api_echo():
@@ -47,13 +48,20 @@ def disciplina_por_id(id_desejado):
     disciplina = disciplina.select()
     disciplina = disciplina.where(modelo.Disciplina.id == id_desejado)
     disciplina = disciplina[0]
-    return  {
-                "id"        :   disciplina.id,
-                "nome"      :   disciplina.nome,
-                "sigla"     :   disciplina.sigla,
-                "periodo"   :   disciplina.periodo,
-                "ativa"     :   disciplina.ativa,
-            }
+    disciplina =    {
+                        "id"        :   disciplina.id,
+                        "nome"      :   disciplina.nome,
+                        "sigla"     :   disciplina.sigla,
+                        "periodo"   :   disciplina.periodo,
+                        "ativa"     :   disciplina.ativa,
+                    }
+    # O horário é a lista de aulas em que a disciplina é lecionada.
+    # As aulas são serializadas semanalmente; a primeira aula é a aula zero;
+    # A última aula é dada por aulas_por_dia * dias_por_semana.
+    horario = dados.horario[disciplina["id"]]
+    horario = [aula for aula in range(len(horario)) if horario[aula] == 1]
+    disciplina["horario"] = horario
+    return disciplina
 
 @app.route('/disciplina/<int:id>', methods = ['GET'])
 def disciplina_api(id):
@@ -67,10 +75,9 @@ def disciplinas_list_api():
 def melhor_grade():
     max_grades = 3
     max_disciplinas = 6
-    if request.json:
-        grades = matricula.grade_ideal(
-                request.json, max_grades, max_disciplinas
-            )
+    historico = request.json['historico']
+    if historico:
+        grades = matricula.grade_ideal(historico, max_grades, max_disciplinas)
         grades_json = []
         for grade in grades:
             grades_json.append([disciplina_por_id(id) for id in grade])
