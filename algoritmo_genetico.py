@@ -5,24 +5,24 @@ from random import randint, choice
 
 class Genetico():
 	'''Implementação das funçẽos de algoritmo genético.'''
-	
+
 	def populacao_inicial(self, num_individuos, tam_genoma):
 		'''Retorna uma populacao com genomas aleatórios.'''
 		assert num_individuos > 0, "O tamanho da população deve ser maior que zero."
 		assert tam_genoma > 0, "O tamanho do genoma deve ser maior que zero."
-		int_aleatorio = lambda x: choice([0,1]) 
+		int_aleatorio = lambda x: choice([0,1])
 		populacao = []
 		for i in range(num_individuos):
 			populacao.append(map(int_aleatorio, range(tam_genoma)))
 		return populacao
-		
+
 	def fitness(self, genoma):
 		'''Função que mede a adequação do genoma ao meio.'''
 		pass
-	
-	def crossover(self, pai1, pai2, taxa_mutacao): 
+
+	def crossover(self, pai1, pai2, taxa_mutacao):
 		'''Cruza dois genomas em um ponto aleatório, segundo a taxa de mutação definida.'''
-		assert len(pai1) > 0 and len(pai2) > 0, "Os genomas não podem ser nulos."
+		assert len(list(pai1)) > 0 and len(list(pai2)) > 0, "Os genomas não podem ser nulos."
 		assert len(pai1) == len(pai2), "Os pais devem ter o mesmo tamanho."
 		assert False not in [x in (0,1) for x in pai1], "Os genomas dos pais devem ser binários."
 		assert False not in [x in (0,1) for x in pai2], "Os genomas dos pais devem ser binários."
@@ -39,7 +39,7 @@ class Genetico():
 		assert taxa_mutacao >= 0, "A taxa de mutação não pode ser negativa."
 		altera_genes = lambda x: x if randint(0, 100) > taxa_mutacao else 1 - x
 		return [altera_genes(x) for x in genoma]
-	
+
 	def selecao(self, populacao, func_fitness, perc_corte):
 		'''Retorna os melhores membros da população segundo a
 		função fitness, limitado ao percentual de corte.'''
