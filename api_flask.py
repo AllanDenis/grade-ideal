@@ -10,7 +10,7 @@ def api_echo():
 def not_found(error=None):
     message = {
             'status': 404,
-            'message': 'Not Found: ' + request.url,
+            'message': request.url + ': ' + error,
     }
     resp = jsonify(message)
     resp.status_code = 404
@@ -75,14 +75,13 @@ def melhor_grade():
     max_grades = 3
     max_disciplinas = 6
     historico = request.json['historico']
-    if historico:
+    if historico != None:
         grades = matricula.grade_ideal(historico, max_grades, max_disciplinas)
         grades_json = []
         for grade in grades:
             grades_json.append([disciplina_por_id(id) for id in grade])
         return jsonify({"grades" : grades_json})
-    else:
-        return None
+    return not_found("Histórico em formato incorreto ou inexistente.")
 
 if __name__ == '__main__':
     app.debug = True
