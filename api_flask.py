@@ -31,14 +31,17 @@ def lista_disciplinas():
     for d in modelo.Disciplina.select():
         # aulas = matricula.aulas_da_grade(d.id, matricula.horario)
         # aulas = matricula.binario_para_indices(aulas, range(len(aulas)))
-        disciplinas.append({
+        disciplina_dict = {
             "id"        :   d.id,
             "nome"      :   d.nome,
             "sigla"     :   d.sigla,
             "periodo"   :   d.periodo,
             "ativa"     :   d.ativa,
-            # "horario"   :   aulas,
-        })
+        }
+        horario = dados.horario[disciplina_dict["id"]]
+        horario = [aula for aula in range(len(horario)) if horario[aula] == 1]
+        disciplina_dict["horario"] = horario
+        disciplinas.append(disciplina_dict)
     return disciplinas
 
 def disciplina_por_id(id_desejado):
