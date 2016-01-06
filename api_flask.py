@@ -28,17 +28,9 @@ def api_users(userid):
 def lista_disciplinas():
     '''Retorna a lista de todas as disciplinas.'''
     disciplinas = []
-    for d in modelo.Disciplina.select():
-        # aulas = matricula.aulas_da_grade(d.id, matricula.horario)
-        # aulas = matricula.binario_para_indices(aulas, range(len(aulas)))
-        disciplina_dict = {
-            "id"        :   d.id,
-            "nome"      :   d.nome,
-            "sigla"     :   d.sigla,
-            "periodo"   :   d.periodo,
-            "ativa"     :   d.ativa,
-        }
-        horario = dados.horario[disciplina_dict["id"]]
+    for disciplina in modelo.Disciplina.select():
+        disciplina_dict = vars(disciplina)['_data']
+        horario = dados.horario[disciplina_dict['id']]
         horario = [aula for aula in range(len(horario)) if horario[aula] == 1]
         disciplina_dict["horario"] = horario
         disciplinas.append(disciplina_dict)
@@ -50,13 +42,7 @@ def disciplina_por_id(id_desejado):
     disciplina = disciplina.select()
     disciplina = disciplina.where(modelo.Disciplina.id == id_desejado)
     disciplina = disciplina[0]
-    disciplina =    {
-                        "id"        :   disciplina.id,
-                        "nome"      :   disciplina.nome,
-                        "sigla"     :   disciplina.sigla,
-                        "periodo"   :   disciplina.periodo,
-                        "ativa"     :   disciplina.ativa,
-                    }
+    disciplina = vars(disciplina)['_data']
     # O horário é a lista de aulas em que a disciplina é lecionada.
     # As aulas são serializadas semanalmente; a primeira aula é a aula zero;
     # A última aula é dada por aulas_por_dia * dias_por_semana.
