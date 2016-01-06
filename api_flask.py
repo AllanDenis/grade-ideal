@@ -63,8 +63,8 @@ def disciplinas_list_api():
 def melhor_grade():
     max_grades = 3
     max_disciplinas = 6
-    historico = request.json['historico']
-    if historico != None:
+    if 'historico' in request.json:
+        historico = request.json['historico']
         grades = matricula.grade_ideal(historico, max_grades, max_disciplinas)
         grades_json = []
         for grade in grades:
