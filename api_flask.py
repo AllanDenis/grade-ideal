@@ -1,4 +1,5 @@
 from flask import Flask, jsonify, request
+from flask.json import JSONEncoder
 from banco import app
 import matricula, modelo, dados
 
@@ -72,8 +73,13 @@ def melhor_grade():
         return jsonify({"grades" : grades_json})
     return not_found("Histórico em formato incorreto ou inexistente.")
 
+class JsonEncoderSemEspacos(JSONEncoder):
+    '''Para remover espaços desnecessários do jsonify'''
+    item_separator, key_separator = ',' , ':'
+
 if __name__ == '__main__':
     app.debug = True
     app.use_reloader = True
+    app.json_encoder = JsonEncoderSemEspacos
     app.config['JSONIFY_PRETTYPRINT_REGULAR'] = False
     app.run(host='0.0.0.0')
