@@ -15,19 +15,15 @@ import dados, disciplina, algoritmo_genetico
 
 agora = time
 deps = dados.dependencias
-historico = dados.historico
-horario = dados.horario	
-
 somaReq = deps.sum(axis=0)
+historico = dados.historico
+horario = dados.horario
 
 def cursaveis(historico, dependencias, historico_binario=True):
 	'''Lista de disciplinas que o aluno pode cursar.'''
 	if not historico_binario:
 		print("Histórico não binário: ", historico)
-		hist_bin = list()
-		historico.append(0) #Disciplina nula
-		for i in range(len(dados.historico)):
-			hist_bin.append(0)
+		hist_bin = [0] * len(dados.historico)
 		for i in historico:
 			if 0 <= i < len(dados.historico):
 				hist_bin[i] = 1
@@ -52,11 +48,11 @@ def cursaveis(historico, dependencias, historico_binario=True):
 
 print("Requisitos:\t%s" % "".join(map(str, somaReq)))
 print("Histórico:\t%s" % "".join(map(str, historico)))
-print("Cursáveis:\t%s" % "".join(map(str, cursaveis(historico, deps))))
+print("Cursáveis:\t%s" % cursaveis(historico, deps))
 print("Calculando as melhores grades para você. Aguarde...")
 
 def grade_valida(g):
-	__doc__ = '''Retorna True se a grade não possuir conflitos.'''
+	'''Retorna True se a grade não possuir conflitos.'''
 	assert len(g) > 0, "A grade deve ter ao menos uma disciplina."
 	return max(g) == 1 # no máximo uma disciplina por aula
 
@@ -130,40 +126,34 @@ def busca_gulosa(cursaveis, lim_grades):
 	return grades
 
 
-# def busca_genetica(genotipo, geracoes):
-# 	'''Evolui para uma boa grade (possivelmente a melhor) usando algoritmo genético.'''
-# 	g = algoritmo_genetico.Genetico()
-# 	tam_genoma = len(genotipo)
-# 	tam_populacao = 50
-# 	perc_corte = 80
-# 	mutacao = 30
-# 	populacao = g.populacao_inicial(tam_populacao, tam_genoma)
-# 	i, melhor, pior = 0, -1, 1
-# 	avalia_pontuacao = lambda x: grade_pontuacao(list(compress(genotipo, x)))
-#
-# 	while i < geracoes:
-# 		i += 1
-# 		# pior = avalia_pontuacao(populacao[-1])
-# 		desvio = std(list(map(avalia_pontuacao, populacao)))
-# 		# media = mean(map(avalia_pontuacao, populacao))
-# 		melhor = avalia_pontuacao(populacao[0])
-# 		print("Geração %d:\tDesvio:%.2f pts\t\tMelhor: %.2f pts\tDiscs.:\t%s" % (i, desvio, melhor, list(compress(genotipo, populacao[0]))))
-# 		populacao = g.selecao(populacao, avalia_pontuacao, perc_corte)
-# 		populacao = g.procriar(populacao, tam_populacao - len(list(populacao)), mutacao)
-# 	return populacao[0]
+def busca_genetica(genotipo, geracoes, tam_populacao=50, perc_corte=80, mutacao=30, verbose=False):
+	'''Evolui para uma boa grade (possivelmente a melhor) usando algoritmo genético.'''
+	g = algoritmo_genetico.Genetico()
+	tam_genoma = len(genotipo)
+	populacao = g.populacao_inicial(tam_populacao, tam_genoma)
+	populacao = [list(individuo) for individuo in populacao]
+	i, melhor, pior = 0, -1, 1
+	avalia_pontuacao = lambda x: grade_pontuacao(list(compress(genotipo, x)))
+
+
+	while i < geracoes:
+		if verbose:
+			pior = avalia_pontuacao(populacao[-1])
+			desvio = std(list(map(avalia_pontuacao, populacao)))
+			media = mean(map(avalia_pontuacao, populacao))
+			melhor = avalia_pontuacao(populacao[0])
+			print("Geração %d:\tDesvio:%.2f pts\t\tMelhor: %.2f pts\tDiscs.:\t%s" % (i, desvio, melhor, list(compress(genotipo, populacao[0]))))
+		i += 1
+		populacao = g.selecao(populacao, avalia_pontuacao, perc_corte)
+		populacao = g.procriar(populacao, tam_populacao - len(list(populacao)), mutacao)
+	melhor_grade = compress(genotipo, populacao[0])
+	return list(melhor_grade)
 
 
 def grade_ideal(historico, lim_grades=5, max_disciplinas=0):
 	inicio = agora()
 	grades = busca_exaustiva(cursaveis(historico, deps, False), lim_grades, max_disciplinas)
-
-	#==========================================================
-	#print("\nTotal de %d grades encontradas em %-.3fs." % (len(grades), agora() - inicio))
-	#stdout.write("Ordenando as grades...")
-	#inicio = agora()
-	# Ordena as grades por quantidade de disciplinas e seus períodos
 	grades.sort(key=grade_pontuacao, reverse=True)
-	#print("Ordenação feita em %.3f segundos." % (agora() - inicio))
 
 	for i in enumerate(grades[:lim_grades]):#[:(5 if len(grades) > 5 else -1)]:
 		print("\n(%d)\t%.2fpts\t" % (i[0] + 1, grade_pontuacao(i[1])) + str(i[1]))
@@ -173,5 +163,8 @@ def grade_ideal(historico, lim_grades=5, max_disciplinas=0):
 
 max_grades = 5
 max_disciplinas = 6
-meu_historico = [1,2,3,4,6,7,8,9,11,12,13,14,15,19,31,33,40]
-# print(grade_ideal(meu_historico, max_grades, max_disciplinas))
+meu_historico = [1,2,3,4,43,44]
+
+genotipo = cursaveis(historico, deps)
+geracoes = 100
+print(busca_genetica(genotipo, geracoes))

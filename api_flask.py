@@ -3,29 +3,6 @@ from flask.json import JSONEncoder
 from banco import app
 import matricula, modelo, dados
 
-@app.route('/echo', methods = ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'])
-def api_echo():
-    return "ECHO: " + request.method
-
-@app.errorhandler(404)
-def not_found(error=None):
-    message = {
-            'status': 404,
-            'message': request.url + ': ' + error,
-    }
-    resp = jsonify(message)
-    resp.status_code = 404
-    return resp
-
-@app.route('/users/<userid>', methods = ['GET'])
-def api_users(userid):
-    users = {'1':'john', '2':'steve', '3':'bill'}
-
-    if userid in users:
-        return jsonify({userid:users[userid]})
-    else:
-        return not_found()
-
 def lista_disciplinas():
     '''Retorna a lista de todas as disciplinas.'''
     disciplinas = []
@@ -72,6 +49,20 @@ def melhor_grade():
             grades_json.append([disciplina_por_id(id) for id in grade])
         return jsonify({"grades" : grades_json})
     return not_found("Histórico em formato incorreto ou inexistente.")
+
+@app.route('/echo', methods = ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'])
+def api_echo():
+    return "ECHO: " + request.method
+
+@app.errorhandler(404)
+def not_found(error=None):
+    message = {
+            'status': 404,
+            'message': request.url + ': ' + error,
+    }
+    resp = jsonify(message)
+    resp.status_code = 404
+    return resp
 
 class JsonEncoderSemEspacos(JSONEncoder):
     '''Para remover espaços desnecessários do jsonify'''
