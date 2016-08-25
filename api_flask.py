@@ -73,7 +73,7 @@ def disciplinas_list_api():
 
 @app.route('/grades', methods = ['POST'])
 def melhor_grade():
-    max_grades = 3
+    max_grades = 10
     max_disciplinas = 6
     historico = request.json['historico']
     if historico != None:
