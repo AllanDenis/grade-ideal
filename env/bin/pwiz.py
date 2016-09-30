@@ -1,4 +1,4 @@
-#!/home/allan/GDSW/matricula/env/bin/python3
+#!/home/allan/grade-ideal/env/bin/python3
 
 import datetime
 import sys
@@ -10,12 +10,12 @@ from peewee import print_
 from peewee import __version__ as peewee_version
 from playhouse.reflection import *
 
-TEMPLATE = """from peewee import *
+TEMPLATE = """from peewee import *%s
 
 database = %s('%s', **%s)
 
 class UnknownField(object):
-    pass
+    def __init__(self, *_, **__): pass
 
 class BaseModel(Model):
     class Meta:
@@ -47,6 +47,7 @@ def print_models(introspector, tables=None, preserve_order=False):
     database = introspector.introspect(table_names=tables)
 
     print_(TEMPLATE % (
+        introspector.get_additional_imports(),
         introspector.get_database_class().__name__,
         introspector.get_database_name(),
         repr(introspector.get_database_kwargs())))

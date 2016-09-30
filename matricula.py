@@ -16,7 +16,7 @@ import dados, disciplina, algoritmo_genetico
 agora = time
 deps = dados.dependencias
 historico = dados.historico
-horario = dados.horario	
+horario = dados.horario
 
 somaReq = deps.sum(axis=0)
 
@@ -130,33 +130,33 @@ def busca_gulosa(cursaveis, lim_grades):
 	return grades
 
 
-# def busca_genetica(genotipo, geracoes):
-# 	'''Evolui para uma boa grade (possivelmente a melhor) usando algoritmo genético.'''
-# 	g = algoritmo_genetico.Genetico()
-# 	tam_genoma = len(genotipo)
-# 	tam_populacao = 50
-# 	perc_corte = 80
-# 	mutacao = 30
-# 	populacao = g.populacao_inicial(tam_populacao, tam_genoma)
-# 	i, melhor, pior = 0, -1, 1
-# 	avalia_pontuacao = lambda x: grade_pontuacao(list(compress(genotipo, x)))
-#
-# 	while i < geracoes:
-# 		i += 1
-# 		# pior = avalia_pontuacao(populacao[-1])
-# 		desvio = std(list(map(avalia_pontuacao, populacao)))
-# 		# media = mean(map(avalia_pontuacao, populacao))
-# 		melhor = avalia_pontuacao(populacao[0])
-# 		print("Geração %d:\tDesvio:%.2f pts\t\tMelhor: %.2f pts\tDiscs.:\t%s" % (i, desvio, melhor, list(compress(genotipo, populacao[0]))))
-# 		populacao = g.selecao(populacao, avalia_pontuacao, perc_corte)
-# 		populacao = g.procriar(populacao, tam_populacao - len(list(populacao)), mutacao)
-# 	return populacao[0]
+def busca_genetica(genotipo, geracoes):
+	'''Evolui para uma boa grade (possivelmente a melhor) usando algoritmo genético.'''
+	g = algoritmo_genetico.Genetico()
+	tam_genoma = len(genotipo)
+	tam_populacao = 50
+	perc_corte = 80
+	mutacao = 30
+	populacao = g.populacao_inicial(tam_populacao, tam_genoma)
+	i, melhor, pior = 0, -1, 1
+	avalia_pontuacao = lambda x: grade_pontuacao(list(compress(genotipo, x)))
+
+	while i < geracoes:
+		i += 1
+		# pior = avalia_pontuacao(populacao[-1])
+		desvio = std(list(map(avalia_pontuacao, populacao)))
+		# media = mean(map(avalia_pontuacao, populacao))
+		melhor = avalia_pontuacao(populacao[0])
+		print("Geração %d:\tDesvio:%.2f pts\t\tMelhor: %.2f pts\tDiscs.:\t%s" % (i, desvio, melhor, list(compress(genotipo, populacao[0]))))
+		populacao = g.selecao(populacao, avalia_pontuacao, perc_corte)
+		populacao = g.procriar(populacao, tam_populacao - len(list(populacao)), mutacao)
+	return populacao[0]
 
 
 def grade_ideal(historico, lim_grades=5, max_disciplinas=0):
 	inicio = agora()
-	grades = busca_exaustiva(cursaveis(historico, deps, False), lim_grades, max_disciplinas)
-
+	# grades = busca_exaustiva(cursaveis(historico, deps, False), lim_grades, max_disciplinas)
+	grades = busca_genetica(44, 500)
 	#==========================================================
 	#print("\nTotal de %d grades encontradas em %-.3fs." % (len(grades), agora() - inicio))
 	#stdout.write("Ordenando as grades...")
