@@ -155,8 +155,8 @@ def busca_genetica(genotipo, geracoes):
 
 def grade_ideal(historico, lim_grades=5, max_disciplinas=0):
 	inicio = agora()
-	# grades = busca_exaustiva(cursaveis(historico, deps, False), lim_grades, max_disciplinas)
-	grades = busca_genetica(44, 500)
+	grades = busca_exaustiva(cursaveis(historico, deps, False), lim_grades, max_disciplinas)
+	# grades = busca_genetica(44, 500)
 	#==========================================================
 	#print("\nTotal de %d grades encontradas em %-.3fs." % (len(grades), agora() - inicio))
 	#stdout.write("Ordenando as grades...")

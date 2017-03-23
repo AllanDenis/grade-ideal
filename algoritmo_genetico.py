@@ -23,10 +23,10 @@ class Genetico():
 	def crossover(self, pai1, pai2, taxa_mutacao):
 		'''Cruza dois genomas em um ponto aleatório, segundo a taxa de mutação definida.'''
 		assert len(list(pai1)) > 0 and len(list(pai2)) > 0, "Os genomas não podem ser nulos."
-		assert len(pai1) == len(pai2), "Os pais devem ter o mesmo tamanho."
+		assert len(list(pai1)) == len(list(pai2)), "Os pais devem ter o mesmo tamanho."
 		assert False not in [x in (0,1) for x in pai1], "Os genomas dos pais devem ser binários."
 		assert False not in [x in (0,1) for x in pai2], "Os genomas dos pais devem ser binários."
-		ponto_de_corte = randint(0, len(pai1))
+		ponto_de_corte = randint(0, len(list(pai1)))
 		filho1 = pai1[:ponto_de_corte] + pai2[ponto_de_corte:] #Crossover
 		filho2 = pai2[:ponto_de_corte] + pai1[ponto_de_corte:]
 		filho1 = self.mutacao(filho1, taxa_mutacao)
@@ -35,7 +35,7 @@ class Genetico():
 
 	def mutacao(self, genoma, taxa_mutacao):
 		'''Altera o genoma segundo a taxa de mutação informada'''
-		assert len(genoma) > 0, "O genoma não pode ser nulo."
+		assert len(list(genoma)) > 0, "O genoma não pode ser nulo."
 		assert taxa_mutacao >= 0, "A taxa de mutação não pode ser negativa."
 		altera_genes = lambda x: x if randint(0, 100) > taxa_mutacao else 1 - x
 		return [altera_genes(x) for x in genoma]
