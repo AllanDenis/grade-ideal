@@ -3,8 +3,8 @@ from peewee import *
 from flask_cors import CORS
 from flask_compress import Compress
 
-usuario, senha = 'gdsw_matricula', 'iIM6Kt8jRekUr0eV'
-host, banco = 'localhost', 'gdsw_matricula'
+usuario, senha = 'gradeideal', 'OVUMLFqtMUxuSwai'
+host, banco = 'localhost', 'gradeideal'
 
 app = Flask(__name__)
 Compress(app)
