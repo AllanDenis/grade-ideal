@@ -1,0 +1,6 @@
+grade-ideal:
+  build: .
+  ports:
+   - "80:5000"
+  volumes:
+   - .:/code
